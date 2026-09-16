@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Royall UI • Component Test</title>
+<link rel="stylesheet" href="../core2/master.css">
+</head>
+<body>
+<div id="app"></div>
+<script type="module">
+import {RoyallUI} from '../core2/master.js';
+
+var ui=RoyallUI.mount({
+  mount:'#app',
+  icon:'🧩',
+  title:'Royall UI',
+  description:'Component test',
+  status:{text:'Ready ✔️',mode:'success'}
+});
+
+var box=document.createElement('div');
+box.style.cssText='display:flex;gap:8px;flex-wrap:wrap;padding-top:10px';
+['green','red','blue'].forEach(function(mode){
+  var b=document.createElement('button');
+  b.textContent=mode.charAt(0).toUpperCase()+mode.slice(1)+' Toast';
+  b.onclick=function(){ui.toast[mode]('This is a '+mode+' toast');};
+  box.appendChild(b);
+});
+ui.content.appendChild(box);
+</script>
+</body>
+</html>
