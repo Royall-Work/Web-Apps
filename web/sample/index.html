@@ -1,22 +1,203 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#fff"><title>Royall UI Engine • Deep Test</title><link rel="stylesheet" href="../core/royall-ui.css"></head>
-<body><div id="app"></div><script src="../core/royall-ui.js"></script><script>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#fff">
+<title>Royall UI Engine • Final Tester</title>
+<link rel="stylesheet" href="../core/royall-ui.css">
+</head>
+<body>
+<div id="app"></div>
+<script src="../core/royall-ui.js"></script>
+<script>
 (function(){
-var ui=RoyallUI.mount({mount:'#app',icon:'🧩',title:'Royall UI Engine',description:'Deep Component & API Test',status:{text:'Active ✔️',mode:'success'},headerButton:{text:'Clear',tone:'red',onClick:function(){RoyallUI.confirm({icon:'🗑️',title:'Clear Test?',text:'Runner-defined header action.',cancelText:'No',confirmText:'Yes'},function(){RoyallUI.successToast('Cleared')})}}});
-var nav=RoyallUI.chipNav([{label:'Overview',value:0},{label:'Inputs',value:1},{label:'Dialogs',value:2},{label:'Controls',value:3}],function(v){show(v)});ui.content.appendChild(nav);var pages=[];for(var i=0;i<4;i++){var p=document.createElement('section');p.className='royall-page'+(i===0?' active':'');pages.push(p);ui.content.appendChild(p)}function show(n){pages.forEach(function(p,i){p.classList.toggle('active',i===n)});Array.prototype.forEach.call(nav.children,function(b,i){b.classList.toggle('active',i===n)})}
-function add(p,c){p.appendChild(c);return c}function btn(text,cls,fn){return RoyallUI.button(text,'royall-btn '+(cls||'soft'),fn)}
-var o=RoyallUI.card('Parent Layout');var om=document.createElement('div');om.className='royall-message';om.textContent='Fixed header + attribution + optional right status + caller content. No status is rendered when status is omitted.';o.appendChild(om);add(pages[0],o);
-var hc=RoyallUI.card('Header Button Tones');var hg=document.createElement('div');hg.className='royall-tone-grid';[['Red','red'],['Green','green'],['Blue','blue'],['Amber','amber']].forEach(function(x){var b=document.createElement('button');b.type='button';b.className='tone-'+x[1];b.textContent=x[0];b.onclick=function(){ui.setHeaderButton({text:x[0],tone:x[1],onClick:function(){RoyallUI.successToast(x[0]+' action')}})};hg.appendChild(b)});hc.appendChild(hg);hc.appendChild(btn('Custom Purple','soft',function(){ui.setHeaderButton({text:'Purple',color:'#7542b8',textColor:'#fff',borderColor:'#7542b8',onClick:function(){RoyallUI.infoDialog({title:'Custom Header',text:'Caller supplied color.'})}})}));add(pages[0],hc);
-var st=RoyallUI.card('Status Modes');var sg=document.createElement('div');sg.className='royall-tone-grid';[['Success','success','Active ✔️'],['Error','error','Offline ✖'],['Info','info','Ready ℹ️'],['Remove','remove','']].forEach(function(x){var b=document.createElement('button');b.type='button';b.className='tone-'+(x[1]==='remove'?'red':x[1]);b.textContent=x[0];b.onclick=function(){x[1]==='remove'?ui.removeStatus():ui.setStatus(x[2],x[1])};sg.appendChild(b)});st.appendChild(sg);add(pages[0],st);
-var ta=RoyallUI.textarea({placeholder:'Type text...'}),tc=RoyallUI.card('Textarea',{head:true,stats:'Reusable',actions:[{text:'Clear',className:'royall-clear-small',onClick:function(){RoyallUI.clearConfirm(ta.textarea,'text')}},{text:'Paste',className:'royall-paste-small',onClick:async function(){var v=await RoyallUI.paste();if(v)ta.textarea.value=v}}]});tc.appendChild(ta.el);add(pages[1],tc);
-var inp=RoyallUI.input({placeholder:'Single-line input',actions:[{text:'Copy',className:'royall-small-btn blue',onClick:function(x){RoyallUI.copy(x.value)}}]}),ic=RoyallUI.card('Input');ic.appendChild(inp.el);add(pages[1],ic);
-var chips=RoyallUI.chipNav([{label:'Green'},{label:'Amber'},{label:'Blue'},{label:'Purple'}],function(v){RoyallUI.successToast('Selected '+v.label)}),cc=RoyallUI.card('4-Chip Navbar');cc.appendChild(chips);add(pages[1],cc);
-var ex=document.createElement('div');ex.className='royall-expand';ex.innerHTML='<div class="royall-divider"></div><div class="royall-empty">Expandable content can live anywhere.</div>';var ec=RoyallUI.card('Expandable');ec.appendChild(ex);ec.appendChild(btn('Toggle Content','soft',function(){RoyallUI.toggle(ex)}));add(pages[1],ec);
-var dc=RoyallUI.card('Dialog Suite');var dw=document.createElement('div');dw.className='royall-chip-row';[['Confirm',function(){RoyallUI.confirm({title:'Confirm',text:'Fixed confirm theme.',cancelText:'No',confirmText:'Yes'},function(){RoyallUI.successToast('Confirmed')})}],['Warning',function(){RoyallUI.warning({title:'Warning',text:'Amber warning.',cancelText:'Cancel',confirmText:'Proceed'})}],['Error',function(){RoyallUI.errorDialog({title:'Error',text:'Red error.'})}],['Info',function(){RoyallUI.infoDialog({title:'Info',text:'Blue information.'})}],['Choice',function(){RoyallUI.choice({title:'Choice',text:'Caller actions.'},[{text:'Alpha',onClick:function(){RoyallUI.successToast('Alpha')}},{text:'Beta',onClick:function(){RoyallUI.warningToast('Beta')}}])}],['Edit Name',function(){RoyallUI.prompt({icon:'✏️',title:'Edit Name',text:'Top-gravity name editor.',placeholder:'Name',value:'Royall',gravity:'top'},function(v){RoyallUI.successToast('Name: '+v)})}]].forEach(function(x){dw.appendChild(btn(x[0],'soft',x[1]))});dc.appendChild(dw);add(pages[2],dc);
-var tv=RoyallUI.card('Toast Variants');var tw=document.createElement('div');tw.className='royall-chip-row';[['Success','success'],['Warning','warning'],['Error','error'],['Info','info']].forEach(function(x){tw.appendChild(btn(x[0],'soft',function(){RoyallUI.toast(x[0]+' toast',x[1])}))});tv.appendChild(tw);add(pages[2],tv);
-var tg=RoyallUI.card('Purple Toggle Button');var toggle=RoyallUI.toggleButton({text:'Enable Feature',onChange:function(on,b){b.setText(on?'Disable Feature':'Enable Feature');RoyallUI.successToast(on?'Enabled':'Disabled')}});tg.appendChild(toggle);var tr=document.createElement('div');tr.className='royall-chip-row';tr.appendChild(btn('Set ON','soft',function(){toggle.setState(true)}));tr.appendChild(btn('Set OFF','soft',function(){toggle.setState(false)}));tr.appendChild(btn('Change Text','soft',function(){toggle.setText(toggle.getState()?'Turn Off':'Turn On')}));tg.appendChild(tr);add(pages[3],tg);
-var rh=RoyallUI.card('Runtime Header / Status');rh.appendChild(btn('Status Green','green',function(){ui.setStatus('Active ✔️','success')}));rh.appendChild(btn('Status Red','danger',function(){ui.setStatus('Offline ✖','error')}));rh.appendChild(btn('Status Blue','blue',function(){ui.setStatus('Ready ℹ️','info')}));rh.appendChild(btn('Remove Status','soft',function(){ui.removeStatus()}));add(pages[3],rh);
-var res=RoyallUI.result('Result line 1\nResult line 2\nResult line 3'),rc=RoyallUI.card('Result + Download',{head:true,result:true,stats:'3 lines',actions:[{text:'Copy',className:'royall-copy-small',onClick:function(){RoyallUI.copy(res.textContent)}},{text:'Download',className:'royall-download-small',onClick:function(){RoyallUI.downloadNamed({extension:'.txt',value:'royall-test'},res.textContent)}}]});rc.appendChild(res);add(pages[3],rc);
-var ac=RoyallUI.card('Bottom Actions');ac.appendChild(btn('Show Bottom Bar','green',function(){RoyallUI.bottomBar([{text:'Primary',onClick:function(){RoyallUI.successToast('Primary') }},{text:'Secondary',onClick:function(){RoyallUI.warningToast('Secondary')}}])}));ac.appendChild(btn('Show Amber FAB','amber',function(){var b=RoyallUI.fab('Floating Action',function(){RoyallUI.successToast('FAB clicked')},true);setTimeout(function(){b.remove()},3000)}));add(pages[3],ac);
+'use strict';
+
+var ui=RoyallUI.mount({
+  mount:'#app',
+  icon:'🧩',
+  title:'Royall UI Engine',
+  description:'Final Multi-Screen Component Tester',
+  status:{text:'Engine Active ✔️',mode:'success'},
+  headerButton:{
+    text:'Reset',tone:'red',
+    onClick:function(){
+      RoyallUI.confirm({icon:'♻️',title:'Reset Tester?',text:'Reset the active test state.',cancelText:'No',confirmText:'Reset'},function(){
+        showMain(0);flowShow(0);RoyallUI.successToast('Tester reset');
+      });
+    }
+  }
+});
+
+var mainNav=RoyallUI.chipNav([
+  {label:'Overview',value:0},
+  {label:'Inputs',value:1},
+  {label:'Dialogs',value:2},
+  {label:'Controls',value:3}
+],showMain);
+ui.content.appendChild(mainNav);
+
+var mainPages=[];
+for(var i=0;i<4;i++){
+  var p=document.createElement('section');
+  p.className='royall-page'+(i===0?' active':'');
+  mainPages.push(p);
+  ui.content.appendChild(p);
+}
+
+function showMain(n){
+  n=Math.max(0,Math.min(mainPages.length-1,n));
+  mainPages.forEach(function(p,i){p.classList.toggle('active',i===n)});
+  Array.prototype.forEach.call(mainNav.children,function(b,i){b.classList.toggle('active',i===n)});
+  window.scrollTo(0,0);
+}
+function add(p,x){p.appendChild(x);return x}
+function btn(text,cls,fn){return RoyallUI.button(text,'royall-btn '+(cls||'soft'),fn)}
+function cardButtonRow(items){
+  var row=document.createElement('div');row.className='royall-chip-row';
+  items.forEach(function(x){row.appendChild(btn(x[0],x[1]||'soft',x[2]))});
+  return row;
+}
+
+/* 0 • Overview */
+var parent=RoyallUI.card('Parent Layout');
+add(parent,(function(){var x=document.createElement('div');x.className='royall-message';x.textContent='Fixed parent header, attribution strip, optional status, content area and runner-controlled components.';return x})());
+add(mainPages[0],parent);
+
+var headerCard=RoyallUI.card('Header Button + Status');
+add(headerCard,cardButtonRow([
+ ['Red','danger',function(){ui.setHeaderButton({text:'Red',tone:'red',onClick:function(){RoyallUI.errorToast('Red header action')}})}],
+ ['Green','green',function(){ui.setHeaderButton({text:'Green',tone:'green',onClick:function(){RoyallUI.successToast('Green header action')}})}],
+ ['Blue','blue',function(){ui.setHeaderButton({text:'Blue',tone:'blue',onClick:function(){RoyallUI.toast('Blue header action','info')}})}],
+ ['Amber','soft',function(){ui.setHeaderButton({text:'Amber',tone:'amber',onClick:function(){RoyallUI.warningToast('Amber header action')}})}]
+]));
+add(headerCard,cardButtonRow([
+ ['Status OK','green',function(){ui.setStatus('Active ✔️','success')}],
+ ['Status Error','danger',function(){ui.setStatus('Offline ✖','error')}],
+ ['Status Info','blue',function(){ui.setStatus('Ready ℹ️','info')}],
+ ['Remove','soft',function(){ui.removeStatus()}]
+]));
+add(mainPages[0],headerCard);
+
+var chipsCard=RoyallUI.card('Chips');
+add(chipsCard,RoyallUI.chips([{label:'One',value:1},{label:'Two',value:2},{label:'Three',value:3},{label:'Four',value:4}],function(v){RoyallUI.successToast('Chip '+v)}));
+add(chipsCard,(function(){var x=document.createElement('div');x.className='royall-message';x.textContent='Standard reusable chips • maximum 4 items.';return x})());
+add(mainPages[0],chipsCard);
+
+var segmentCard=RoyallUI.card('Segmented Chips • Encrypt / Decrypt Style');
+var segment=RoyallUI.segmentedChips([{label:'🔒 Encrypt',value:'encrypt'},{label:'🔓 Decrypt',value:'decrypt'}],function(v){RoyallUI.successToast(v==='encrypt'?'Encrypt selected':'Decrypt selected')});
+add(segmentCard,segment);
+add(segmentCard,(function(){var x=document.createElement('div');x.className='royall-message';x.textContent='Equal-width mode selector matching the application-style Encrypt / Decrypt control.';return x})());
+add(mainPages[0],segmentCard);
+
+var common=RoyallUI.card('Common Actions');
+add(common,cardButtonRow([
+ ['Toast','soft',function(){RoyallUI.successToast('Common toast')}],
+ ['Divider','soft',function(){RoyallUI.infoDialog({title:'Divider',text:'RoyallUI.divider() is available to runners.'})}],
+ ['FAB','soft',function(){var b=RoyallUI.fab('Amber FAB',function(){RoyallUI.successToast('FAB clicked')},true);setTimeout(function(){b.remove()},3000)}]
+]));
+add(mainPages[0],common);
+
+/* 1 • Inputs */
+var input=RoyallUI.input({placeholder:'Single-line input',actions:[
+  {text:'Paste',className:'royall-small-btn blue',onClick:async function(x){var v=await RoyallUI.paste();if(v)x.value=v}},
+  {text:'Copy',className:'royall-small-btn blue',onClick:function(x){RoyallUI.copy(x.value)}}
+]});
+var inputCard=RoyallUI.card('Input Field');add(inputCard,input.el);add(mainPages[1],inputCard);
+
+var area=RoyallUI.textarea({placeholder:'Type or paste multiline text...'});
+var areaCard=RoyallUI.card('Textarea',{head:true,stats:'Multiline',actions:[
+ {text:'Clear',className:'royall-clear-small',onClick:function(){RoyallUI.clearConfirm(area.textarea,'text')}},
+ {text:'Paste',className:'royall-paste-small',onClick:async function(){var v=await RoyallUI.paste();if(v)area.textarea.value=v}}
+]});add(areaCard,area.el);add(mainPages[1],areaCard);
+
+var expandBox=document.createElement('div');expandBox.className='royall-expand';expandBox.innerHTML='<div class="royall-divider"></div><div class="royall-empty">Expandable content can be placed anywhere in a runner screen.</div>';
+var expandCard=RoyallUI.card('Expandable Content');add(expandCard,expandBox);add(expandCard,btn('Toggle Content','soft',function(){RoyallUI.toggle(expandBox)}));add(mainPages[1],expandCard);
+
+var result=RoyallUI.result('Result line 1\nResult line 2\nResult line 3\nLong values wrap automatically without horizontal page overflow.');
+var resultCard=RoyallUI.card('Result + Copy + Download',{head:true,result:true,stats:'4 lines',actions:[
+ {text:'Copy',className:'royall-copy-small',onClick:function(){RoyallUI.copy(result.textContent)}},
+ {text:'Download',className:'royall-download-small',onClick:function(){RoyallUI.downloadNamed({title:'Export Result',extension:'.txt',value:'royall-result'},result.textContent)}}
+]});add(resultCard,result);add(mainPages[1],resultCard);
+
+/* 2 • Dialogs */
+var dialogCard=RoyallUI.card('Dialog Suite');
+add(dialogCard,cardButtonRow([
+ ['Confirm','soft',function(){RoyallUI.confirm({icon:'❓',title:'Confirm Action',text:'This is the standard confirmation dialog.',cancelText:'No',confirmText:'Yes'},function(){RoyallUI.successToast('Confirmed')})}],
+ ['Warning','soft',function(){RoyallUI.warning({icon:'⚠️',title:'Warning',text:'Amber warning dialog with compact text-width buttons.',cancelText:'Cancel',confirmText:'Continue'})}],
+ ['Error','soft',function(){RoyallUI.errorDialog({icon:'✖️',title:'Error',text:'Red error dialog.',buttonText:'Close'})}],
+ ['Info','soft',function(){RoyallUI.infoDialog({icon:'ℹ️',title:'Information',text:'Blue information dialog.',buttonText:'OK'})}]
+]));
+add(dialogCard,cardButtonRow([
+ ['Choice','soft',function(){RoyallUI.choice({icon:'🔘',title:'Choose Option',text:'Multiple buttons should wrap to their text width.',cancelText:'Close'},[
+   {text:'Alpha',onClick:function(){RoyallUI.successToast('Alpha')}},
+   {text:'Beta',onClick:function(){RoyallUI.warningToast('Beta')}},
+   {text:'Gamma',theme:'warning',onClick:function(){RoyallUI.toast('Gamma','warning')}},
+   {text:'Delta',theme:'danger',onClick:function(){RoyallUI.errorToast('Delta')}}
+ ])}],
+ ['Prompt','soft',function(){RoyallUI.prompt({icon:'✏️',title:'Edit Name',text:'Top-gravity prompt / name input.',placeholder:'Name',value:'Royall',gravity:'top',cancelText:'Cancel',submitText:'Save'},function(v){RoyallUI.successToast('Saved: '+v)})}],
+ ['Clear Confirm','soft',function(){RoyallUI.clearConfirm(function(){RoyallUI.successToast('Cleared by confirmation')},'test data')}]
+]));
+add(mainPages[2],dialogCard);
+
+var toastCard=RoyallUI.card('Toast Variants');add(toastCard,cardButtonRow([
+ ['Success','green',function(){RoyallUI.successToast('Success toast')}],
+ ['Warning','soft',function(){RoyallUI.warningToast('Warning toast')}],
+ ['Error','danger',function(){RoyallUI.errorToast('Error toast')}],
+ ['Info','blue',function(){RoyallUI.toast('Info toast','info')}]
+]));add(mainPages[2],toastCard);
+
+var dialogInfo=RoyallUI.card('Dialog Button Behaviour');var msg=document.createElement('div');msg.className='royall-message';msg.textContent='Buttons are now compact, wrap by text width, align to the end, and wrap onto another line when choices exceed available width.';add(dialogInfo,msg);add(mainPages[2],dialogInfo);
+
+/* 3 • Controls + Activity-like navigation */
+var controlCard=RoyallUI.card('Controls');
+var toggle=RoyallUI.toggleButton({text:'Enable Feature',onChange:function(on,b){b.setText(on?'Disable Feature':'Enable Feature');RoyallUI.successToast(on?'Enabled':'Disabled')}});
+add(controlCard,toggle);
+add(controlCard,cardButtonRow([
+ ['Set ON','soft',function(){toggle.setState(true)}],
+ ['Set OFF','soft',function(){toggle.setState(false)}],
+ ['Read State','soft',function(){RoyallUI.infoDialog({title:'Toggle State',text:String(toggle.getState())})}]
+]));add(mainPages[3],controlCard);
+
+var bottomCard=RoyallUI.card('Bottom Bar + FAB');
+add(bottomCard,cardButtonRow([
+ ['2 Button Bar','green',function(){var b=RoyallUI.bottomBar([{text:'Primary',onClick:function(){RoyallUI.successToast('Primary clicked')}},{text:'Secondary',onClick:function(){RoyallUI.warningToast('Secondary clicked')}}]);setTimeout(function(){b.remove()},4000)}],
+ ['Amber FAB','soft',function(){var b=RoyallUI.fab('Floating Action',function(){RoyallUI.successToast('FAB clicked')},true);setTimeout(function(){b.remove()},4000)}]
+]));add(mainPages[3],bottomCard);
+
+/* Activity-style screen flow embedded in the Controls page. */
+var flowCard=RoyallUI.card('Activity-like Screen Flow');
+var flowHost=document.createElement('div');flowHost.className='royall-screen-stack';
+var flowNames=['Activity 1','Activity 2','Activity 3'];
+var flowPages=[];
+flowNames.forEach(function(name,i){
+  var s=document.createElement('section');
+  s.className='royall-screen'+(i===0?' active':'');
+  var ind=document.createElement('div');ind.className='royall-screen-indicator';
+  var left=document.createElement('span');left.textContent=name;
+  var right=document.createElement('span');right.textContent=(i+1)+' / '+flowNames.length;
+  ind.append(left,right);add(s,ind);
+  var c=RoyallUI.card(i===0?'First Activity':i===1?'Second Activity':'Third Activity');
+  var text=document.createElement('div');text.className='royall-message';
+  text.textContent=i===0?'Start screen. Next swaps to the second activity.':i===1?'Middle screen. Back returns to Activity 1; Next advances to Activity 3.':'Final screen. Back returns to Activity 2.';
+  add(c,text);add(s,c);flowPages.push(s);flowHost.appendChild(s);
+});
+add(flowCard,flowHost);
+var flowNav=document.createElement('div');flowNav.className='royall-screen-nav';
+var back=btn('← Back','soft',function(){flowShow(flowIndex-1)});back.classList.add('back');
+var next=btn('Next →','soft',function(){flowShow(flowIndex+1)});next.classList.add('next');
+flowNav.append(back,next);add(flowCard,flowNav);add(mainPages[3],flowCard);
+var flowIndex=0;
+function flowShow(n){
+  flowIndex=Math.max(0,Math.min(flowPages.length-1,n));
+  flowPages.forEach(function(p,i){p.classList.toggle('active',i===flowIndex)});
+  back.disabled=flowIndex===0;next.disabled=flowIndex===flowPages.length-1;
+  back.style.opacity=back.disabled?.55:1;next.style.opacity=next.disabled?.55:1;
+}
+flowShow(0);
+
 })();
-</script></body></html>
+</script>
+</body>
+</html>
