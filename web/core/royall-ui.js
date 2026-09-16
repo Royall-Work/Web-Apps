@@ -5,7 +5,6 @@ var RoyallUI=(function(){
   function make(tag,cls,text){var x=document.createElement(tag);if(cls)x.className=cls;if(text!=null)x.textContent=text;return x}
   function esc(s){return String(s).replace(/[&<>\"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]})}
 
-  /* Fixed imported parent. The application only supplies icon, name and description. */
   api.mount=function(opts){
     opts=opts||{};
     var root=typeof opts.mount==='string'?document.querySelector(opts.mount):(opts.mount||document.body);
@@ -14,11 +13,30 @@ var RoyallUI=(function(){
     var header=make('header','royall-header');
     header.appendChild(make('div','royall-header-icon',opts.icon||'🥏'));
     var hm=make('div','royall-header-main');hm.appendChild(make('h1','royall-title',opts.title||'Royall Tool'));hm.appendChild(make('div','royall-sub',opts.description||''));header.appendChild(hm);
-    if(opts.headerButton){var ha=make('div','royall-header-actions');var b=make('button','royall-header-action '+(opts.headerButton.className||''),opts.headerButton.text||'Action');b.type='button';b.onclick=opts.headerButton.onClick||function(){};ha.appendChild(b);header.appendChild(ha)}
+    if(opts.headerButton){var ha=make('div','royall-header-actions');var hb=opts.headerButton;var b=make('button','royall-header-action '+(hb.className||''),hb.text||'Action');b.type='button';if(hb.color){b.style.setProperty('--royall-header-button-bg',hb.color);b.style.background=hb.color;b.style.borderColor=hb.borderColor||hb.color;b.style.color=hb.textColor||'#fff'}b.onclick=hb.onClick||function(){};ha.appendChild(b);header.appendChild(ha)}
     root.appendChild(header);
-    var feature=make('div','royall-feature-strip');feature.appendChild(make('span','royall-feature-left'));feature.firstChild.innerHTML='• Feature Provided by <strong class="royall-developer-name">'+esc(opts.developer||'Araaf Royall')+'</strong> ❣️';root.appendChild(feature);
+    var feature=make('div','royall-feature-strip');
+    var left=make('span','royall-feature-left');left.innerHTML='• Feature Provided by <strong class="royall-developer-name">'+esc(opts.developer||'Araaf Royall')+'</strong> ❣️';feature.appendChild(left);
+    if(opts.status!=null){
+      var s=typeof opts.status==='string'?{text:opts.status,mode:'success'}:opts.status;
+      var mode=String(s.mode||'success').toLowerCase();
+      if(mode!=='success'&&mode!=='error'&&mode!=='info')mode='success';
+      var badge=make('span','royall-status-badge '+mode,s.text||'Active ✔️');
+      feature.appendChild(badge);
+      feature._statusBadge=badge;
+    }
+    root.appendChild(feature);
     var content=make('main','royall-content');root.appendChild(content);
-    return {root:root,header:header,feature:feature,content:content};
+    return {root:root,header:header,feature:feature,status:feature._statusBadge||null,content:content,
+      setStatus:function(text,mode){
+        if(!feature._statusBadge){
+          feature._statusBadge=make('span','royall-status-badge success','Active ✔️');feature.appendChild(feature._statusBadge);
+        }
+        var m=String(mode||'success').toLowerCase();if(m!=='success'&&m!=='error'&&m!=='info')m='success';
+        feature._statusBadge.textContent=text||'Active ✔️';feature._statusBadge.className='royall-status-badge '+m;return feature._statusBadge;
+      },
+      removeStatus:function(){if(feature._statusBadge){feature._statusBadge.remove();feature._statusBadge=null}}
+    };
   };
 
   api.card=function(title,opts){opts=opts||{};var card=make('section','royall-card');if(opts.result)card.classList.add('royall-result-card');
@@ -37,7 +55,6 @@ var RoyallUI=(function(){
   api.downloadNamed=function(opts,text,type){opts=opts||{};api.prompt({icon:'⬇️',theme:'info',title:opts.title||'Download',text:opts.text||'Enter a file name.',placeholder:opts.placeholder||'File name',value:opts.value||'download'},function(name){name=(name||'download').trim();if(!name)return api.toast('File name required','error');var ext=opts.extension||'';if(ext && !name.toLowerCase().endsWith(ext.toLowerCase()))name+=ext;api.download(name,text,type)})};
 
   function openDialog(opts){opts=opts||{};var kind=opts.theme||opts.type||'confirm';var back=make('div','royall-dialog-backdrop'),box=make('div','royall-dialog theme-'+kind),head=make('div','royall-dialog-head');head.appendChild(make('div','royall-dialog-icon',opts.icon||({warning:'⚠️',error:'✖',info:'ℹ️',confirm:'?'})[kind]||'⚠️'));head.appendChild(make('h3','',opts.title||'Confirm'));box.appendChild(head);if(opts.text)box.appendChild(make('p','',opts.text));var actions=make('div','royall-dialog-actions');box.appendChild(actions);back.appendChild(box);document.body.appendChild(back);function close(){back.classList.remove('show');setTimeout(function(){back.remove()},180)}back.onclick=function(e){if(e.target===back)close()};setTimeout(function(){back.classList.add('show')},0);return {back:back,box:box,actions:actions,close:close}};
-
   api.dialog=function(opts){return openDialog(opts)};
   api.confirm=function(opts,onConfirm){opts=Object.assign({},opts||{}, {theme:'confirm'});var d=openDialog(opts),cancel=make('button','royall-dialog-btn cancel',opts.cancelText||'Cancel'),yes=make('button','royall-dialog-btn '+(opts.actionTheme==='warning'?'warning':'confirm'),opts.confirmText||'Confirm');cancel.type=yes.type='button';cancel.onclick=d.close;yes.onclick=function(){d.close();if(onConfirm)onConfirm()};d.actions.append(cancel,yes);return d};
   api.warning=function(opts,onContinue){opts=Object.assign({},opts||{},{theme:'warning'});var d=openDialog(opts),cancel=make('button','royall-dialog-btn cancel',opts.cancelText||'Cancel'),yes=make('button','royall-dialog-btn warning',opts.confirmText||'Continue');cancel.type=yes.type='button';cancel.onclick=d.close;yes.onclick=function(){d.close();if(onContinue)onContinue()};d.actions.append(cancel,yes);return d};
