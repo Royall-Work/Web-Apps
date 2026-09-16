@@ -45,7 +45,7 @@
         {
           "name": "utility",
           "description": "Sample ui",
-          "url": "Sample/sample.html",
+          "url": "sample/index.html",
           "icon": "🥎"
         },
         {
