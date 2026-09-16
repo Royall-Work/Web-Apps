@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Royall UI • HTML2</title>
+<link rel="stylesheet" href="../core/royall-ui.css">
+</head>
+<body>
+<div id="app"></div>
+
+<script src="../core/royall-ui.js"></script>
+<script>
+(function () {
+  var ui = RoyallUI.mount({
+    mount: '#app',
+    icon: '🧩',
+    title: 'Royall UI HTML2',
+    description: 'Header Button • Changeable Status',
+    headerButton: {
+      text: 'Action',
+      className: 'royall-btn soft',
+      onClick: function () {
+        RoyallUI.successToast('Header button clicked');
+      }
+    }
+  });
+
+  /* Status lives inside the engine-provided feature strip. */
+  var status = document.createElement('button');
+  status.type = 'button';
+  status.className = 'royall-status-badge';
+  status.textContent = 'Active ✔️';
+  status.onclick = function () {
+    var active = status.classList.toggle('active');
+    status.textContent = active ? 'Active ✔️' : 'Inactive';
+  };
+  ui.feature.appendChild(status);
+
+  var card = RoyallUI.card('HTML2 Sample', { head: true, stats: 'Engine Parent' });
+  var text = document.createElement('div');
+  text.className = 'royall-empty';
+  text.textContent = 'Top-right button is embedded through the header action slot. The status badge is on the same feature line and can be changed at runtime.';
+  card.appendChild(text);
+  ui.content.appendChild(card);
+
+  var buttons = RoyallUI.card('Change Status');
+  var row = document.createElement('div');
+  row.className = 'royall-chip-row';
+
+  function add(text, value, toast) {
+    var b = RoyallUI.button(text, 'royall-btn soft', function () {
+      status.classList.toggle('active', value === 'Active ✔️');
+      status.textContent = value;
+      if (toast) RoyallUI.successToast(toast);
+    });
+    row.appendChild(b);
+  }
+
+  add('Active', 'Active ✔️', 'Status changed to Active');
+  add('Ready', 'Ready ●', 'Status changed to Ready');
+  add('Offline', 'Offline', 'Status changed to Offline');
+
+  buttons.appendChild(row);
+  ui.content.appendChild(buttons);
+})();
+</script>
+</body>
+</html>
