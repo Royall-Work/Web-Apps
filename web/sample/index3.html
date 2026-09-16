@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Royall UI Sample 3</title>
+<link rel="stylesheet" href="../core/royall-ui.css">
+</head>
+<body><div id="app"></div>
+<script src="../core/royall-ui.js"></script>
+<script>
+const ui=RoyallUI.mount({mount:'#app',icon:'🔧',title:'Sample Three',description:'Shared dialogs, chips and expandable UI',featureRight:'No Header Button'});
+const choice=RoyallUI.card('Mode',{head:true,stats:'Shared chips'});choice.appendChild(RoyallUI.chips([{label:'Basic',value:'basic'},{label:'Advanced',value:'advanced'},{label:'Custom',value:'custom'}],v=>RoyallUI.toast('Selected '+v)));ui.content.appendChild(choice);
+const inputCard=RoyallUI.card('Name');const field=RoyallUI.input({placeholder:'Enter a name'});inputCard.appendChild(field.el);ui.content.appendChild(inputCard);
+const exp=RoyallUI.card('Expandable Details');const toggle=RoyallUI.button('Expand','royall-btn soft',()=>{RoyallUI.toggle(details);toggle.textContent=details.classList.contains('open')?'Collapse':'Expand'});exp.querySelector('.royall-section-title').appendChild(toggle);const details=document.createElement('div');details.id='details';details.className='royall-expand';details.innerHTML='<div class="royall-divider"></div><div class="royall-empty">This content is controlled by the shared expand/collapse helper.</div>';exp.appendChild(details);ui.content.appendChild(exp);
+RoyallUI.bottomBar([{text:'Save',onClick:()=>RoyallUI.toast('Saved ✔️')},{text:'More',onClick:()=>RoyallUI.choice({icon:'⚙️',title:'More Actions',text:'These actions use the same global dialog styling.'},[{text:'Rename',onClick:()=>RoyallUI.prompt({icon:'✏️',title:'Rename',text:'Enter a new name.',placeholder:'Name',submitText:'Save'},v=>RoyallUI.toast(v?'Renamed ✔️':'No name entered'))},{text:'Reset',onClick:()=>RoyallUI.clearConfirm(field.input,'name')}])}]);
+</script></body></html>
