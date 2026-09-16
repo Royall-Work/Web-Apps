@@ -12,31 +12,86 @@
 <script src="../core/royall-ui.js"></script>
 <script>
 (function(){
-  var ui=RoyallUI.mount({mount:'#app',icon:'🧩',title:'Royall UI Engine',description:'Universal Theme • Component Test'});
-  var tabs=document.createElement('div');tabs.className='royall-page-switch';
-  ['Basics','Dialogs','More'].forEach(function(name,i){var b=document.createElement('button');b.textContent=name;b.type='button';b.onclick=function(){showPage(i)};tabs.appendChild(b)});ui.content.appendChild(tabs);
-  var pages=[];for(var i=0;i<3;i++){var p=document.createElement('section');p.className='royall-page'+(i===0?' active':'');ui.content.appendChild(p);pages.push(p)}
-  function showPage(n){pages.forEach(function(p,i){p.classList.toggle('active',i===n)});Array.prototype.forEach.call(tabs.children,function(b,i){b.classList.toggle('active',i===n)})}showPage(0);
+  var ui=RoyallUI.mount({
+    mount:'#app',
+    icon:'🧩',
+    title:'Royall UI Engine',
+    description:'Universal Theme • Full Component Test',
+    headerButton:{text:'Clear',tone:'red',onClick:function(){RoyallUI.confirm({icon:'🗑️',title:'Clear Demo?',text:'This is a runner-defined header action.',cancelText:'No',confirmText:'Yes'},function(){RoyallUI.successToast('Header action confirmed')})}},
+    status:{text:'Active ✔️',mode:'success'}
+  });
 
-  var input=RoyallUI.textarea({placeholder:'Type text here...'});
-  var inputCard=RoyallUI.card('Text Field',{head:true,stats:'0 words • 0 chars',actions:[{text:'Clear',className:'royall-clear-small',onClick:function(){RoyallUI.clearConfirm(input.textarea,'text')}},{text:'Paste',className:'royall-paste-small',onClick:async function(){var v=await RoyallUI.paste();if(v)input.textarea.value=v}}]});inputCard.appendChild(input.el);pages[0].appendChild(inputCard);
-  var field=RoyallUI.input({placeholder:'Reusable input',actions:[{text:'Copy',className:'royall-small-btn blue',onClick:function(x){RoyallUI.copy(x.value)}}]});var fieldCard=RoyallUI.card('Input');fieldCard.appendChild(field.el);pages[0].appendChild(fieldCard);
-  var chips=RoyallUI.chips([{label:'One',value:1},{label:'Two',value:2},{label:'Three',value:3}],function(v){RoyallUI.successToast('Selected '+v)});var chipCard=RoyallUI.card('Chips');chipCard.appendChild(chips);pages[0].appendChild(chipCard);
+  var tabs=document.createElement('div');
+  tabs.className='royall-page-switch';
+  var pages=[];
+  ['Overview','Inputs','Dialogs','Actions','Status'].forEach(function(name,i){
+    var b=document.createElement('button');b.type='button';b.textContent=name;
+    b.onclick=function(){showPage(i)};tabs.appendChild(b);
+    var p=document.createElement('section');p.className='royall-page'+(i===0?' active':'');pages.push(p);
+  });
+  ui.content.appendChild(tabs);pages.forEach(function(p){ui.content.appendChild(p)});
+  function showPage(n){pages.forEach(function(p,i){p.classList.toggle('active',i===n);tabs.children[i].classList.toggle('active',i===n)})}
+  showPage(0);
 
-  var dc=RoyallUI.card('Dialogs');var wrap=document.createElement('div');wrap.className='royall-chip-row';
-  function db(text,fn){var b=document.createElement('button');b.className='royall-btn soft';b.type='button';b.textContent=text;b.onclick=fn;wrap.appendChild(b)}
-  db('Confirm',function(){RoyallUI.confirm({title:'Confirm Action',text:'Runner can change button text, but not the fixed theme.',cancelText:'No',confirmText:'Yes'},function(){RoyallUI.successToast('Confirmed')})});
-  db('Warning',function(){RoyallUI.warning({title:'Warning',text:'Fixed amber warning dialog.',cancelText:'Cancel',confirmText:'Proceed'},function(){RoyallUI.warningToast('Proceeding')})});
-  db('Error',function(){RoyallUI.errorDialog({title:'Error',text:'Fixed red error dialog.'})});
-  db('Info',function(){RoyallUI.infoDialog({title:'Information',text:'Fixed blue information dialog.'})});
-  db('Choice',function(){RoyallUI.choice({title:'Choose Option',text:'Choice buttons keep the engine theme.'},[{text:'Alpha',onClick:function(){RoyallUI.successToast('Alpha selected')}},{text:'Beta',onClick:function(){RoyallUI.successToast('Beta selected')}}])});
-  db('Name Dialog',function(){RoyallUI.prompt({title:'Enter Name',text:'Shared input dialog.',placeholder:'Name'},function(v){RoyallUI.successToast('Hello '+(v||'there'))})});dc.appendChild(wrap);pages[1].appendChild(dc);
-  var tc=RoyallUI.card('Toast Colors');var tw=document.createElement('div');tw.className='royall-chip-row';[['Success','successToast'],['Warning','warningToast'],['Error','errorToast'],['Info','toast']].forEach(function(x){var b=document.createElement('button');b.className='royall-btn soft';b.textContent=x[0];b.onclick=function(){x[1]==='toast'?RoyallUI.toast('Information','info'):RoyallUI[x[1]](x[0]+' toast')};tw.appendChild(b)});tc.appendChild(tw);pages[1].appendChild(tc);
+  /* Overview */
+  var intro=RoyallUI.card('Parent Layout');
+  var msg=document.createElement('div');msg.className='royall-message';msg.textContent='Header, attribution strip, optional status badge, content area and bottom actions are all supplied by the engine.';intro.appendChild(msg);pages[0].appendChild(intro);
+  var tones=RoyallUI.card('Header Button Colors');
+  var tg=document.createElement('div');tg.className='royall-tone-grid';
+  [['Red','red'],['Green','green'],['Blue','blue'],['Amber','amber']].forEach(function(x){
+    var b=document.createElement('button');b.type='button';b.className='tone-'+x[1];b.textContent=x[0];b.onclick=function(){ui.setHeaderButton({text:x[0],tone:x[1],onClick:function(){RoyallUI.successToast(x[0]+' header button')}})};tg.appendChild(b);
+  });
+  tones.appendChild(tg);pages[0].appendChild(tones);
+  var custom=RoyallUI.card('Custom Header Color');
+  var customBtn=RoyallUI.button('Purple Header','royall-btn soft',function(){ui.setHeaderButton({text:'Purple',color:'#7c3aed',borderColor:'#7c3aed',textColor:'#fff',onClick:function(){RoyallUI.toast('Custom purple action','info')}})});
+  custom.appendChild(customBtn);pages[0].appendChild(custom);
+  var noStatus=RoyallUI.button('Remove Status','royall-btn danger',function(){ui.removeStatus();RoyallUI.infoDialog({title:'Status Removed',text:'The caller is not using a status badge, so the status area disappears.'})});
+  var reStatus=RoyallUI.button('Restore Status','royall-btn green',function(){ui.setStatus('Active ✔️','success')});
+  var sc=RoyallUI.card('Optional Status');var sr=document.createElement('div');sr.className='royall-chip-row';sr.appendChild(noStatus);sr.appendChild(reStatus);sc.appendChild(sr);pages[0].appendChild(sc);
 
-  var res=RoyallUI.result('Sample downloadable result\nLine 2\nLine 3');var rc=RoyallUI.card('Result',{head:true,result:true,stats:'3 lines',actions:[{text:'Copy',className:'royall-copy-small',onClick:function(){RoyallUI.copy(res.textContent)}},{text:'Name Download',className:'royall-download-small',onClick:function(){RoyallUI.downloadNamed({extension:'.txt'},res.textContent)}}]});rc.appendChild(res);pages[2].appendChild(rc);
-  var box=document.createElement('div');box.className='royall-expand';box.innerHTML='<div class="royall-divider"></div><div class="royall-empty">Shared expandable content. The engine controls its common appearance.</div>';var exp=RoyallUI.card('Expandable Section',{head:true,actions:[{text:'Toggle',className:'royall-btn soft',onClick:function(){RoyallUI.toggle(box)}}]});exp.appendChild(box);pages[2].appendChild(exp);
-  var direct=RoyallUI.card('Direct Download');var bd=RoyallUI.button('Download Direct','royall-btn green',function(){RoyallUI.download('direct-test.txt','Direct download from Royall UI Engine.','text/plain')});direct.appendChild(bd);pages[2].appendChild(direct);
-  RoyallUI.bottomBar([{text:'Primary Action',onClick:function(){RoyallUI.successToast('Primary action')}},{text:'Secondary',onClick:function(){RoyallUI.warningToast('Secondary action')}}]);
+  /* Inputs */
+  var ta=RoyallUI.textarea({placeholder:'Type multiline text here...'});
+  var tc=RoyallUI.card('Textarea',{head:true,stats:'Reusable field',actions:[
+    {text:'Clear',className:'royall-clear-small',onClick:function(){RoyallUI.clearConfirm(ta.textarea,'text')}},
+    {text:'Paste',className:'royall-paste-small',onClick:async function(){var v=await RoyallUI.paste();if(v)ta.textarea.value=v}}
+  ]});tc.appendChild(ta.el);pages[1].appendChild(tc);
+  var field=RoyallUI.input({placeholder:'Single-line input',actions:[{text:'Copy',className:'royall-small-btn blue',onClick:function(x){RoyallUI.copy(x.value)}}]});
+  var fc=RoyallUI.card('Input');fc.appendChild(field.el);pages[1].appendChild(fc);
+  var chips=RoyallUI.chips([{label:'One',value:'One'},{label:'Two',value:'Two'},{label:'Three',value:'Three'},{label:'Four',value:'Four'}],function(v){RoyallUI.successToast('Selected '+v)});
+  var cc=RoyallUI.card('Choice Chips');cc.appendChild(chips);pages[1].appendChild(cc);
+  var ex=document.createElement('div');ex.className='royall-expand';ex.innerHTML='<div class="royall-divider"></div><div class="royall-empty">Expandable content controlled through RoyallUI.toggle().</div>';
+  var ec=RoyallUI.card('Expandable Content',{head:true,actions:[{text:'Toggle',className:'royall-btn soft',onClick:function(){RoyallUI.toggle(ex)}}]});ec.appendChild(ex);pages[1].appendChild(ec);
+
+  /* Dialogs */
+  var dc=RoyallUI.card('Confirmation & Dialogs');var dw=document.createElement('div');dw.className='royall-chip-row';
+  function db(text,fn){var b=document.createElement('button');b.type='button';b.className='royall-btn soft';b.textContent=text;b.onclick=fn;dw.appendChild(b)}
+  db('Confirm',function(){RoyallUI.confirm({title:'Confirm Action',text:'The caller controls text only; the dialog theme stays fixed.',cancelText:'No',confirmText:'Yes'},function(){RoyallUI.successToast('Confirmed')})});
+  db('Warning',function(){RoyallUI.warning({title:'Warning',text:'Amber warning dialog.',cancelText:'Cancel',confirmText:'Proceed'},function(){RoyallUI.warningToast('Proceeding')})});
+  db('Error',function(){RoyallUI.errorDialog({title:'Error',text:'Red error dialog.'})});
+  db('Info',function(){RoyallUI.infoDialog({title:'Information',text:'Blue information dialog.'})});
+  db('Choice',function(){RoyallUI.choice({title:'Choose Option',text:'Multiple fixed-theme choices.'},[{text:'Alpha',onClick:function(){RoyallUI.successToast('Alpha selected')}},{text:'Beta',onClick:function(){RoyallUI.infoDialog({title:'Beta',text:'Beta selected.'})}}])});
+  db('Name',function(){RoyallUI.prompt({title:'Enter Name',text:'Shared prompt dialog.',placeholder:'Name'},function(v){RoyallUI.successToast('Hello '+(v||'there'))})});
+  dc.appendChild(dw);pages[2].appendChild(dc);
+  var toastCard=RoyallUI.card('Toast Variants');var tw=document.createElement('div');tw.className='royall-chip-row';
+  [['Success','success'],['Warning','warning'],['Error','error'],['Info','info']].forEach(function(x){var b=document.createElement('button');b.type='button';b.className='royall-btn soft';b.textContent=x[0];b.onclick=function(){RoyallUI.toast(x[0]+' toast',x[1])};tw.appendChild(b)});toastCard.appendChild(tw);pages[2].appendChild(toastCard);
+
+  /* Actions */
+  var result=RoyallUI.result('Sample result\nLine 2\nLine 3\nLine 4');
+  var rc=RoyallUI.card('Result Area',{head:true,result:true,stats:'4 lines',actions:[
+    {text:'Copy',className:'royall-copy-small',onClick:function(){RoyallUI.copy(result.textContent)}},
+    {text:'Download',className:'royall-download-small',onClick:function(){RoyallUI.downloadNamed({extension:'.txt',value:'royall-result'},result.textContent)}}
+  ]});rc.appendChild(result);pages[3].appendChild(rc);
+  var dl=RoyallUI.card('Direct Download');dl.appendChild(RoyallUI.button('Download Direct','royall-btn green',function(){RoyallUI.download('royall-test.txt','Direct download from Royall UI Engine.','text/plain')}));pages[3].appendChild(dl);
+  var fabCard=RoyallUI.card('Floating Action');fabCard.appendChild(RoyallUI.button('Show Amber FAB','royall-btn soft',function(){var b=RoyallUI.fab('Amber Action',function(){RoyallUI.successToast('FAB clicked')},true);setTimeout(function(){b.remove()},3500)}));pages[3].appendChild(fabCard);
+  var bb=RoyallUI.card('Two-Button Bottom Bar');bb.appendChild(RoyallUI.button('Show Bottom Bar','royall-btn blue',function(){RoyallUI.bottomBar([{text:'Primary',onClick:function(){RoyallUI.successToast('Primary')}},{text:'Secondary',onClick:function(){RoyallUI.warningToast('Secondary')}}])}));pages[3].appendChild(bb);
+
+  /* Status */
+  var statusCard=RoyallUI.card('Status Modes');var sg=document.createElement('div');sg.className='royall-tone-grid';
+  [['Success','success','Active ✔️'],['Error','error','Offline ✖'],['Info','info','Ready ℹ️'],['Remove','remove','']].forEach(function(x){var b=document.createElement('button');b.type='button';b.className='tone-'+(x[1]==='remove'?'red':x[1]);b.textContent=x[0];b.onclick=function(){if(x[1]==='remove')ui.removeStatus();else ui.setStatus(x[2],x[1])};sg.appendChild(b)});statusCard.appendChild(sg);pages[4].appendChild(statusCard);
+  var statusNote=RoyallUI.card('Status Contract');var sm=document.createElement('div');sm.className='royall-message';sm.textContent='Status is optional. When present it is anchored to the far right of the attribution strip. Supported modes: success (green), error (red), info (blue).';statusNote.appendChild(sm);pages[4].appendChild(statusNote);
+
+  var activeBar=null;
+  window.addEventListener('beforeunload',function(){if(activeBar)activeBar.remove()});
 })();
 </script>
 </body>
