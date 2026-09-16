@@ -1,98 +1,22 @@
 <!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#ffffff">
-<title>Royall UI Engine Test</title>
-<link rel="stylesheet" href="../core/royall-ui.css">
-</head>
-<body>
-<div id="app"></div>
-<script src="../core/royall-ui.js"></script>
-<script>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#fff"><title>Royall UI Engine • Deep Test</title><link rel="stylesheet" href="../core/royall-ui.css"></head>
+<body><div id="app"></div><script src="../core/royall-ui.js"></script><script>
 (function(){
-  var ui=RoyallUI.mount({
-    mount:'#app',
-    icon:'🧩',
-    title:'Royall UI Engine',
-    description:'Universal Theme • Full Component Test',
-    headerButton:{text:'Clear',tone:'red',onClick:function(){RoyallUI.confirm({icon:'🗑️',title:'Clear Demo?',text:'This is a runner-defined header action.',cancelText:'No',confirmText:'Yes'},function(){RoyallUI.successToast('Header action confirmed')})}},
-    status:{text:'Active ✔️',mode:'success'}
-  });
-
-  var tabs=document.createElement('div');
-  tabs.className='royall-page-switch';
-  var pages=[];
-  ['Overview','Inputs','Dialogs','Actions','Status'].forEach(function(name,i){
-    var b=document.createElement('button');b.type='button';b.textContent=name;
-    b.onclick=function(){showPage(i)};tabs.appendChild(b);
-    var p=document.createElement('section');p.className='royall-page'+(i===0?' active':'');pages.push(p);
-  });
-  ui.content.appendChild(tabs);pages.forEach(function(p){ui.content.appendChild(p)});
-  function showPage(n){pages.forEach(function(p,i){p.classList.toggle('active',i===n);tabs.children[i].classList.toggle('active',i===n)})}
-  showPage(0);
-
-  /* Overview */
-  var intro=RoyallUI.card('Parent Layout');
-  var msg=document.createElement('div');msg.className='royall-message';msg.textContent='Header, attribution strip, optional status badge, content area and bottom actions are all supplied by the engine.';intro.appendChild(msg);pages[0].appendChild(intro);
-  var tones=RoyallUI.card('Header Button Colors');
-  var tg=document.createElement('div');tg.className='royall-tone-grid';
-  [['Red','red'],['Green','green'],['Blue','blue'],['Amber','amber']].forEach(function(x){
-    var b=document.createElement('button');b.type='button';b.className='tone-'+x[1];b.textContent=x[0];b.onclick=function(){ui.setHeaderButton({text:x[0],tone:x[1],onClick:function(){RoyallUI.successToast(x[0]+' header button')}})};tg.appendChild(b);
-  });
-  tones.appendChild(tg);pages[0].appendChild(tones);
-  var custom=RoyallUI.card('Custom Header Color');
-  var customBtn=RoyallUI.button('Purple Header','royall-btn soft',function(){ui.setHeaderButton({text:'Purple',color:'#7c3aed',borderColor:'#7c3aed',textColor:'#fff',onClick:function(){RoyallUI.toast('Custom purple action','info')}})});
-  custom.appendChild(customBtn);pages[0].appendChild(custom);
-  var noStatus=RoyallUI.button('Remove Status','royall-btn danger',function(){ui.removeStatus();RoyallUI.infoDialog({title:'Status Removed',text:'The caller is not using a status badge, so the status area disappears.'})});
-  var reStatus=RoyallUI.button('Restore Status','royall-btn green',function(){ui.setStatus('Active ✔️','success')});
-  var sc=RoyallUI.card('Optional Status');var sr=document.createElement('div');sr.className='royall-chip-row';sr.appendChild(noStatus);sr.appendChild(reStatus);sc.appendChild(sr);pages[0].appendChild(sc);
-
-  /* Inputs */
-  var ta=RoyallUI.textarea({placeholder:'Type multiline text here...'});
-  var tc=RoyallUI.card('Textarea',{head:true,stats:'Reusable field',actions:[
-    {text:'Clear',className:'royall-clear-small',onClick:function(){RoyallUI.clearConfirm(ta.textarea,'text')}},
-    {text:'Paste',className:'royall-paste-small',onClick:async function(){var v=await RoyallUI.paste();if(v)ta.textarea.value=v}}
-  ]});tc.appendChild(ta.el);pages[1].appendChild(tc);
-  var field=RoyallUI.input({placeholder:'Single-line input',actions:[{text:'Copy',className:'royall-small-btn blue',onClick:function(x){RoyallUI.copy(x.value)}}]});
-  var fc=RoyallUI.card('Input');fc.appendChild(field.el);pages[1].appendChild(fc);
-  var chips=RoyallUI.chips([{label:'One',value:'One'},{label:'Two',value:'Two'},{label:'Three',value:'Three'},{label:'Four',value:'Four'}],function(v){RoyallUI.successToast('Selected '+v)});
-  var cc=RoyallUI.card('Choice Chips');cc.appendChild(chips);pages[1].appendChild(cc);
-  var ex=document.createElement('div');ex.className='royall-expand';ex.innerHTML='<div class="royall-divider"></div><div class="royall-empty">Expandable content controlled through RoyallUI.toggle().</div>';
-  var ec=RoyallUI.card('Expandable Content',{head:true,actions:[{text:'Toggle',className:'royall-btn soft',onClick:function(){RoyallUI.toggle(ex)}}]});ec.appendChild(ex);pages[1].appendChild(ec);
-
-  /* Dialogs */
-  var dc=RoyallUI.card('Confirmation & Dialogs');var dw=document.createElement('div');dw.className='royall-chip-row';
-  function db(text,fn){var b=document.createElement('button');b.type='button';b.className='royall-btn soft';b.textContent=text;b.onclick=fn;dw.appendChild(b)}
-  db('Confirm',function(){RoyallUI.confirm({title:'Confirm Action',text:'The caller controls text only; the dialog theme stays fixed.',cancelText:'No',confirmText:'Yes'},function(){RoyallUI.successToast('Confirmed')})});
-  db('Warning',function(){RoyallUI.warning({title:'Warning',text:'Amber warning dialog.',cancelText:'Cancel',confirmText:'Proceed'},function(){RoyallUI.warningToast('Proceeding')})});
-  db('Error',function(){RoyallUI.errorDialog({title:'Error',text:'Red error dialog.'})});
-  db('Info',function(){RoyallUI.infoDialog({title:'Information',text:'Blue information dialog.'})});
-  db('Choice',function(){RoyallUI.choice({title:'Choose Option',text:'Multiple fixed-theme choices.'},[{text:'Alpha',onClick:function(){RoyallUI.successToast('Alpha selected')}},{text:'Beta',onClick:function(){RoyallUI.infoDialog({title:'Beta',text:'Beta selected.'})}}])});
-  db('Name',function(){RoyallUI.prompt({title:'Enter Name',text:'Shared prompt dialog.',placeholder:'Name'},function(v){RoyallUI.successToast('Hello '+(v||'there'))})});
-  dc.appendChild(dw);pages[2].appendChild(dc);
-  var toastCard=RoyallUI.card('Toast Variants');var tw=document.createElement('div');tw.className='royall-chip-row';
-  [['Success','success'],['Warning','warning'],['Error','error'],['Info','info']].forEach(function(x){var b=document.createElement('button');b.type='button';b.className='royall-btn soft';b.textContent=x[0];b.onclick=function(){RoyallUI.toast(x[0]+' toast',x[1])};tw.appendChild(b)});toastCard.appendChild(tw);pages[2].appendChild(toastCard);
-
-  /* Actions */
-  var result=RoyallUI.result('Sample result\nLine 2\nLine 3\nLine 4');
-  var rc=RoyallUI.card('Result Area',{head:true,result:true,stats:'4 lines',actions:[
-    {text:'Copy',className:'royall-copy-small',onClick:function(){RoyallUI.copy(result.textContent)}},
-    {text:'Download',className:'royall-download-small',onClick:function(){RoyallUI.downloadNamed({extension:'.txt',value:'royall-result'},result.textContent)}}
-  ]});rc.appendChild(result);pages[3].appendChild(rc);
-  var dl=RoyallUI.card('Direct Download');dl.appendChild(RoyallUI.button('Download Direct','royall-btn green',function(){RoyallUI.download('royall-test.txt','Direct download from Royall UI Engine.','text/plain')}));pages[3].appendChild(dl);
-  var fabCard=RoyallUI.card('Floating Action');fabCard.appendChild(RoyallUI.button('Show Amber FAB','royall-btn soft',function(){var b=RoyallUI.fab('Amber Action',function(){RoyallUI.successToast('FAB clicked')},true);setTimeout(function(){b.remove()},3500)}));pages[3].appendChild(fabCard);
-  var bb=RoyallUI.card('Two-Button Bottom Bar');bb.appendChild(RoyallUI.button('Show Bottom Bar','royall-btn blue',function(){RoyallUI.bottomBar([{text:'Primary',onClick:function(){RoyallUI.successToast('Primary')}},{text:'Secondary',onClick:function(){RoyallUI.warningToast('Secondary')}}])}));pages[3].appendChild(bb);
-
-  /* Status */
-  var statusCard=RoyallUI.card('Status Modes');var sg=document.createElement('div');sg.className='royall-tone-grid';
-  [['Success','success','Active ✔️'],['Error','error','Offline ✖'],['Info','info','Ready ℹ️'],['Remove','remove','']].forEach(function(x){var b=document.createElement('button');b.type='button';b.className='tone-'+(x[1]==='remove'?'red':x[1]);b.textContent=x[0];b.onclick=function(){if(x[1]==='remove')ui.removeStatus();else ui.setStatus(x[2],x[1])};sg.appendChild(b)});statusCard.appendChild(sg);pages[4].appendChild(statusCard);
-  var statusNote=RoyallUI.card('Status Contract');var sm=document.createElement('div');sm.className='royall-message';sm.textContent='Status is optional. When present it is anchored to the far right of the attribution strip. Supported modes: success (green), error (red), info (blue).';statusNote.appendChild(sm);pages[4].appendChild(statusNote);
-
-  var activeBar=null;
-  window.addEventListener('beforeunload',function(){if(activeBar)activeBar.remove()});
+var ui=RoyallUI.mount({mount:'#app',icon:'🧩',title:'Royall UI Engine',description:'Deep Component & API Test',status:{text:'Active ✔️',mode:'success'},headerButton:{text:'Clear',tone:'red',onClick:function(){RoyallUI.confirm({icon:'🗑️',title:'Clear Test?',text:'Runner-defined header action.',cancelText:'No',confirmText:'Yes'},function(){RoyallUI.successToast('Cleared')})}}});
+var nav=RoyallUI.chipNav([{label:'Overview',value:0},{label:'Inputs',value:1},{label:'Dialogs',value:2},{label:'Controls',value:3}],function(v){show(v)});ui.content.appendChild(nav);var pages=[];for(var i=0;i<4;i++){var p=document.createElement('section');p.className='royall-page'+(i===0?' active':'');pages.push(p);ui.content.appendChild(p)}function show(n){pages.forEach(function(p,i){p.classList.toggle('active',i===n)});Array.prototype.forEach.call(nav.children,function(b,i){b.classList.toggle('active',i===n)})}
+function add(p,c){p.appendChild(c);return c}function btn(text,cls,fn){return RoyallUI.button(text,'royall-btn '+(cls||'soft'),fn)}
+var o=RoyallUI.card('Parent Layout');var om=document.createElement('div');om.className='royall-message';om.textContent='Fixed header + attribution + optional right status + caller content. No status is rendered when status is omitted.';o.appendChild(om);add(pages[0],o);
+var hc=RoyallUI.card('Header Button Tones');var hg=document.createElement('div');hg.className='royall-tone-grid';[['Red','red'],['Green','green'],['Blue','blue'],['Amber','amber']].forEach(function(x){var b=document.createElement('button');b.type='button';b.className='tone-'+x[1];b.textContent=x[0];b.onclick=function(){ui.setHeaderButton({text:x[0],tone:x[1],onClick:function(){RoyallUI.successToast(x[0]+' action')}})};hg.appendChild(b)});hc.appendChild(hg);hc.appendChild(btn('Custom Purple','soft',function(){ui.setHeaderButton({text:'Purple',color:'#7542b8',textColor:'#fff',borderColor:'#7542b8',onClick:function(){RoyallUI.infoDialog({title:'Custom Header',text:'Caller supplied color.'})}})}));add(pages[0],hc);
+var st=RoyallUI.card('Status Modes');var sg=document.createElement('div');sg.className='royall-tone-grid';[['Success','success','Active ✔️'],['Error','error','Offline ✖'],['Info','info','Ready ℹ️'],['Remove','remove','']].forEach(function(x){var b=document.createElement('button');b.type='button';b.className='tone-'+(x[1]==='remove'?'red':x[1]);b.textContent=x[0];b.onclick=function(){x[1]==='remove'?ui.removeStatus():ui.setStatus(x[2],x[1])};sg.appendChild(b)});st.appendChild(sg);add(pages[0],st);
+var ta=RoyallUI.textarea({placeholder:'Type text...'}),tc=RoyallUI.card('Textarea',{head:true,stats:'Reusable',actions:[{text:'Clear',className:'royall-clear-small',onClick:function(){RoyallUI.clearConfirm(ta.textarea,'text')}},{text:'Paste',className:'royall-paste-small',onClick:async function(){var v=await RoyallUI.paste();if(v)ta.textarea.value=v}}]});tc.appendChild(ta.el);add(pages[1],tc);
+var inp=RoyallUI.input({placeholder:'Single-line input',actions:[{text:'Copy',className:'royall-small-btn blue',onClick:function(x){RoyallUI.copy(x.value)}}]}),ic=RoyallUI.card('Input');ic.appendChild(inp.el);add(pages[1],ic);
+var chips=RoyallUI.chipNav([{label:'Green'},{label:'Amber'},{label:'Blue'},{label:'Purple'}],function(v){RoyallUI.successToast('Selected '+v.label)}),cc=RoyallUI.card('4-Chip Navbar');cc.appendChild(chips);add(pages[1],cc);
+var ex=document.createElement('div');ex.className='royall-expand';ex.innerHTML='<div class="royall-divider"></div><div class="royall-empty">Expandable content can live anywhere.</div>';var ec=RoyallUI.card('Expandable');ec.appendChild(ex);ec.appendChild(btn('Toggle Content','soft',function(){RoyallUI.toggle(ex)}));add(pages[1],ec);
+var dc=RoyallUI.card('Dialog Suite');var dw=document.createElement('div');dw.className='royall-chip-row';[['Confirm',function(){RoyallUI.confirm({title:'Confirm',text:'Fixed confirm theme.',cancelText:'No',confirmText:'Yes'},function(){RoyallUI.successToast('Confirmed')})}],['Warning',function(){RoyallUI.warning({title:'Warning',text:'Amber warning.',cancelText:'Cancel',confirmText:'Proceed'})}],['Error',function(){RoyallUI.errorDialog({title:'Error',text:'Red error.'})}],['Info',function(){RoyallUI.infoDialog({title:'Info',text:'Blue information.'})}],['Choice',function(){RoyallUI.choice({title:'Choice',text:'Caller actions.'},[{text:'Alpha',onClick:function(){RoyallUI.successToast('Alpha')}},{text:'Beta',onClick:function(){RoyallUI.warningToast('Beta')}}])}],['Edit Name',function(){RoyallUI.prompt({icon:'✏️',title:'Edit Name',text:'Top-gravity name editor.',placeholder:'Name',value:'Royall',gravity:'top'},function(v){RoyallUI.successToast('Name: '+v)})}]].forEach(function(x){dw.appendChild(btn(x[0],'soft',x[1]))});dc.appendChild(dw);add(pages[2],dc);
+var tv=RoyallUI.card('Toast Variants');var tw=document.createElement('div');tw.className='royall-chip-row';[['Success','success'],['Warning','warning'],['Error','error'],['Info','info']].forEach(function(x){tw.appendChild(btn(x[0],'soft',function(){RoyallUI.toast(x[0]+' toast',x[1])}))});tv.appendChild(tw);add(pages[2],tv);
+var tg=RoyallUI.card('Purple Toggle Button');var toggle=RoyallUI.toggleButton({text:'Enable Feature',onChange:function(on,b){b.setText(on?'Disable Feature':'Enable Feature');RoyallUI.successToast(on?'Enabled':'Disabled')}});tg.appendChild(toggle);var tr=document.createElement('div');tr.className='royall-chip-row';tr.appendChild(btn('Set ON','soft',function(){toggle.setState(true)}));tr.appendChild(btn('Set OFF','soft',function(){toggle.setState(false)}));tr.appendChild(btn('Change Text','soft',function(){toggle.setText(toggle.getState()?'Turn Off':'Turn On')}));tg.appendChild(tr);add(pages[3],tg);
+var rh=RoyallUI.card('Runtime Header / Status');rh.appendChild(btn('Status Green','green',function(){ui.setStatus('Active ✔️','success')}));rh.appendChild(btn('Status Red','danger',function(){ui.setStatus('Offline ✖','error')}));rh.appendChild(btn('Status Blue','blue',function(){ui.setStatus('Ready ℹ️','info')}));rh.appendChild(btn('Remove Status','soft',function(){ui.removeStatus()}));add(pages[3],rh);
+var res=RoyallUI.result('Result line 1\nResult line 2\nResult line 3'),rc=RoyallUI.card('Result + Download',{head:true,result:true,stats:'3 lines',actions:[{text:'Copy',className:'royall-copy-small',onClick:function(){RoyallUI.copy(res.textContent)}},{text:'Download',className:'royall-download-small',onClick:function(){RoyallUI.downloadNamed({extension:'.txt',value:'royall-test'},res.textContent)}}]});rc.appendChild(res);add(pages[3],rc);
+var ac=RoyallUI.card('Bottom Actions');ac.appendChild(btn('Show Bottom Bar','green',function(){RoyallUI.bottomBar([{text:'Primary',onClick:function(){RoyallUI.successToast('Primary') }},{text:'Secondary',onClick:function(){RoyallUI.warningToast('Secondary')}}])}));ac.appendChild(btn('Show Amber FAB','amber',function(){var b=RoyallUI.fab('Floating Action',function(){RoyallUI.successToast('FAB clicked')},true);setTimeout(function(){b.remove()},3000)}));add(pages[3],ac);
 })();
-</script>
-</body>
-</html>
+</script></body></html>
