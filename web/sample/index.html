@@ -9,15 +9,15 @@
 </head>
 <body>
 <div id="app"></div>
-<script src="../core/master.js"></script>
-<script>
+<script type="module">
+import {RoyallUI} from '../core/master.js';
 (function(){
 'use strict';
 const ui=RoyallUI.mount({mount:'#app',icon:'🧩',title:'Royall UI Master',description:'Modular Component & Activity Tester',status:'Active ✔️',headerButton:{text:'Reset',tone:'red',onClick:function(){location.reload()}}});
 function row(items){var r=document.createElement('div');r.className='royall-chip-row';items.forEach(function(x){r.appendChild(RoyallUI.button(x[0],x[1]||'royall-btn soft',x[2]))});return r}
 var nav=RoyallUI.chipNav([{label:'Overview',value:0},{label:'Inputs',value:1},{label:'Dialogs',value:2},{label:'Controls',value:3}],showPage),pages=[];for(var i=0;i<4;i++){var p=document.createElement('section');p.className='royall-page'+(i===0?' active':'');pages.push(p);ui.content.appendChild(p)}ui.content.prepend(nav);
 function showPage(n){pages.forEach(function(p,i){p.classList.toggle('active',i===n)});nav.querySelectorAll('.royall-chip').forEach(function(b,i){b.classList.toggle('active',i===n)})}
-var c=RoyallUI.card('Master Architecture');c.append(RoyallUI.message('Classic Master entry: works without ES modules. Runner pages consume RoyallUI only.'));pages[0].appendChild(c);
+var c=RoyallUI.card('Master Architecture');c.append(RoyallUI.message('Modular Master entry: components are provided by separate engine modules and exposed through RoyallUI.'));pages[0].appendChild(c);
 c=RoyallUI.card('Segmented Chips • Fixed by Count');c.append(RoyallUI.message('2 = Green + Amber • 3 adds Blue • 4 adds Purple. Caller never supplies colors.'));c.append(RoyallUI.segmentedChips([{label:'Encrypt'},{label:'Decrypt'}]));c.append(RoyallUI.segmentedChips([{label:'Text'},{label:'File'},{label:'Folder'}]));c.append(RoyallUI.segmentedChips([{label:'One'},{label:'Two'},{label:'Three'},{label:'Four'}]));pages[0].appendChild(c);
 c=RoyallUI.card('Status — Text Only');c.append(row([['Success','green',function(){ui.setStatus('Active ✔️','success')}],['Info','blue',function(){ui.setStatus('Ready ℹ️','info')}],['Error','danger',function(){ui.setStatus('Offline ✖','error')}],['Remove','soft',function(){ui.removeStatus()}]]));pages[0].appendChild(c);
 c=RoyallUI.card('Activity');c.append(RoyallUI.message('Full Activity-style page changes icon, title, description and content inside the same HTML.'));c.append(RoyallUI.button('Open Activity →','royall-btn green',function(){openActivity(0)}));pages[0].appendChild(c);
