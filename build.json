@@ -43,10 +43,10 @@
       "icon": "✦",
       "items": [
         {
-          "name": "QR Tools",
-          "description": "QR utility",
-          "url": "qr/qr.html",
-          "icon": "QR"
+          "name": "utility",
+          "description": "Sample ui",
+          "url": "Sample/sample.html",
+          "icon": "🥎"
         },
         {
           "name": "Image to Base64",
