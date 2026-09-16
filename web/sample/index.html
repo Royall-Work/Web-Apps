@@ -3,40 +3,35 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#ffffff">
-<title>Royall UI Engine Test</title>
-<link rel="stylesheet" href="../core/royall-ui.css">
+<meta name="theme-color" content="#fff">
+<title>Royall UI Master • Final Tester</title>
+<link rel="stylesheet" href="../core/master.css">
 </head>
 <body>
 <div id="app"></div>
-<script src="../core/royall-ui.js"></script>
-<script>
+<script type="module">
+import {RoyallUI} from '../core/master.js';
 (function(){
-  var ui=RoyallUI.mount({mount:'#app',icon:'🧩',title:'Royall UI Engine',description:'Universal Theme • Component Test'});
-  var tabs=document.createElement('div');tabs.className='royall-page-switch';
-  ['Basics','Dialogs','More'].forEach(function(name,i){var b=document.createElement('button');b.textContent=name;b.type='button';b.onclick=function(){showPage(i)};tabs.appendChild(b)});ui.content.appendChild(tabs);
-  var pages=[];for(var i=0;i<3;i++){var p=document.createElement('section');p.className='royall-page'+(i===0?' active':'');ui.content.appendChild(p);pages.push(p)}
-  function showPage(n){pages.forEach(function(p,i){p.classList.toggle('active',i===n)});Array.prototype.forEach.call(tabs.children,function(b,i){b.classList.toggle('active',i===n)})}showPage(0);
-
-  var input=RoyallUI.textarea({placeholder:'Type text here...'});
-  var inputCard=RoyallUI.card('Text Field',{head:true,stats:'0 words • 0 chars',actions:[{text:'Clear',className:'royall-clear-small',onClick:function(){RoyallUI.clearConfirm(input.textarea,'text')}},{text:'Paste',className:'royall-paste-small',onClick:async function(){var v=await RoyallUI.paste();if(v)input.textarea.value=v}}]});inputCard.appendChild(input.el);pages[0].appendChild(inputCard);
-  var field=RoyallUI.input({placeholder:'Reusable input',actions:[{text:'Copy',className:'royall-small-btn blue',onClick:function(x){RoyallUI.copy(x.value)}}]});var fieldCard=RoyallUI.card('Input');fieldCard.appendChild(field.el);pages[0].appendChild(fieldCard);
-  var chips=RoyallUI.chips([{label:'One',value:1},{label:'Two',value:2},{label:'Three',value:3}],function(v){RoyallUI.successToast('Selected '+v)});var chipCard=RoyallUI.card('Chips');chipCard.appendChild(chips);pages[0].appendChild(chipCard);
-
-  var dc=RoyallUI.card('Dialogs');var wrap=document.createElement('div');wrap.className='royall-chip-row';
-  function db(text,fn){var b=document.createElement('button');b.className='royall-btn soft';b.type='button';b.textContent=text;b.onclick=fn;wrap.appendChild(b)}
-  db('Confirm',function(){RoyallUI.confirm({title:'Confirm Action',text:'Runner can change button text, but not the fixed theme.',cancelText:'No',confirmText:'Yes'},function(){RoyallUI.successToast('Confirmed')})});
-  db('Warning',function(){RoyallUI.warning({title:'Warning',text:'Fixed amber warning dialog.',cancelText:'Cancel',confirmText:'Proceed'},function(){RoyallUI.warningToast('Proceeding')})});
-  db('Error',function(){RoyallUI.errorDialog({title:'Error',text:'Fixed red error dialog.'})});
-  db('Info',function(){RoyallUI.infoDialog({title:'Information',text:'Fixed blue information dialog.'})});
-  db('Choice',function(){RoyallUI.choice({title:'Choose Option',text:'Choice buttons keep the engine theme.'},[{text:'Alpha',onClick:function(){RoyallUI.successToast('Alpha selected')}},{text:'Beta',onClick:function(){RoyallUI.successToast('Beta selected')}}])});
-  db('Name Dialog',function(){RoyallUI.prompt({title:'Enter Name',text:'Shared input dialog.',placeholder:'Name'},function(v){RoyallUI.successToast('Hello '+(v||'there'))})});dc.appendChild(wrap);pages[1].appendChild(dc);
-  var tc=RoyallUI.card('Toast Colors');var tw=document.createElement('div');tw.className='royall-chip-row';[['Success','successToast'],['Warning','warningToast'],['Error','errorToast'],['Info','toast']].forEach(function(x){var b=document.createElement('button');b.className='royall-btn soft';b.textContent=x[0];b.onclick=function(){x[1]==='toast'?RoyallUI.toast('Information','info'):RoyallUI[x[1]](x[0]+' toast')};tw.appendChild(b)});tc.appendChild(tw);pages[1].appendChild(tc);
-
-  var res=RoyallUI.result('Sample downloadable result\nLine 2\nLine 3');var rc=RoyallUI.card('Result',{head:true,result:true,stats:'3 lines',actions:[{text:'Copy',className:'royall-copy-small',onClick:function(){RoyallUI.copy(res.textContent)}},{text:'Name Download',className:'royall-download-small',onClick:function(){RoyallUI.downloadNamed({extension:'.txt'},res.textContent)}}]});rc.appendChild(res);pages[2].appendChild(rc);
-  var box=document.createElement('div');box.className='royall-expand';box.innerHTML='<div class="royall-divider"></div><div class="royall-empty">Shared expandable content. The engine controls its common appearance.</div>';var exp=RoyallUI.card('Expandable Section',{head:true,actions:[{text:'Toggle',className:'royall-btn soft',onClick:function(){RoyallUI.toggle(box)}}]});exp.appendChild(box);pages[2].appendChild(exp);
-  var direct=RoyallUI.card('Direct Download');var bd=RoyallUI.button('Download Direct','royall-btn green',function(){RoyallUI.download('direct-test.txt','Direct download from Royall UI Engine.','text/plain')});direct.appendChild(bd);pages[2].appendChild(direct);
-  RoyallUI.bottomBar([{text:'Primary Action',onClick:function(){RoyallUI.successToast('Primary action')}},{text:'Secondary',onClick:function(){RoyallUI.warningToast('Secondary action')}}]);
+'use strict';
+const ui=RoyallUI.mount({mount:'#app',icon:'🧩',title:'Royall UI Master',description:'Modular Component & Activity Tester',status:'Active ✔️',headerButton:{text:'Reset',tone:'red',onClick:function(){location.reload()}}});
+function row(items){var r=document.createElement('div');r.className='royall-chip-row';items.forEach(function(x){r.appendChild(RoyallUI.button(x[0],x[1]||'royall-btn soft',x[2]))});return r}
+var nav=RoyallUI.chipNav([{label:'Overview',value:0},{label:'Inputs',value:1},{label:'Dialogs',value:2},{label:'Controls',value:3}],showPage),pages=[];for(var i=0;i<4;i++){var p=document.createElement('section');p.className='royall-page'+(i===0?' active':'');pages.push(p);ui.content.appendChild(p)}ui.content.prepend(nav);
+function showPage(n){pages.forEach(function(p,i){p.classList.toggle('active',i===n)});nav.querySelectorAll('.royall-chip').forEach(function(b,i){b.classList.toggle('active',i===n)})}
+var c=RoyallUI.card('Master Architecture');c.append(RoyallUI.message('Modular Master entry: components are provided by separate engine modules and exposed through RoyallUI.'));pages[0].appendChild(c);
+c=RoyallUI.card('Segmented Chips • Fixed by Count');c.append(RoyallUI.message('2 = Green + Amber • 3 adds Blue • 4 adds Purple. Caller never supplies colors.'));c.append(RoyallUI.segmentedChips([{label:'Encrypt'},{label:'Decrypt'}]));c.append(RoyallUI.segmentedChips([{label:'Text'},{label:'File'},{label:'Folder'}]));c.append(RoyallUI.segmentedChips([{label:'One'},{label:'Two'},{label:'Three'},{label:'Four'}]));pages[0].appendChild(c);
+c=RoyallUI.card('Status — Text Only');c.append(row([['Success','green',function(){ui.setStatus('Active ✔️','success')}],['Info','blue',function(){ui.setStatus('Ready ℹ️','info')}],['Error','danger',function(){ui.setStatus('Offline ✖','error')}],['Remove','soft',function(){ui.removeStatus()}]]));pages[0].appendChild(c);
+c=RoyallUI.card('Activity');c.append(RoyallUI.message('Full Activity-style page changes icon, title, description and content inside the same HTML.'));c.append(RoyallUI.button('Open Activity →','royall-btn green',function(){openActivity(0)}));pages[0].appendChild(c);
+var inp=RoyallUI.input({placeholder:'Single-line input',actions:[{text:'Copy',onClick:function(x){RoyallUI.copy(x.value)}}]});c=RoyallUI.card('Input / EditText — Copy defaults to blue');c.appendChild(inp.el);pages[1].appendChild(c);
+var ta=RoyallUI.textarea({placeholder:'Multiline text…'});c=RoyallUI.card('Textarea — Semantic actions',{head:true,stats:'No className supplied',actions:[{text:'Clear',onClick:function(){RoyallUI.clearConfirm(ta.textarea,'text')}},{text:'Paste',onClick:function(){RoyallUI.paste().then(function(v){if(v)ta.textarea.value=v})}}]});c.appendChild(ta.el);pages[1].appendChild(c);
+var ex=document.createElement('div');ex.className='royall-expand';ex.append(RoyallUI.message('Expandable content can live anywhere.'));c=RoyallUI.card('Toggle / Expand');c.appendChild(RoyallUI.button('Toggle Content','royall-btn soft',function(){RoyallUI.toggle(ex)}));c.appendChild(ex);pages[1].appendChild(c);
+var res=RoyallUI.result('Result line 1\nResult line 2\nLong values wrap automatically.');c=RoyallUI.card('Result / Copy / Download',{head:true,result:true,stats:'Copy is automatic blue',actions:[{text:'Copy',onClick:function(){RoyallUI.copy(res.textContent)}},{text:'Download',onClick:function(){RoyallUI.downloadNamed({extension:'.txt',value:'royall-test'},res.textContent)}}]});c.append(res);pages[1].appendChild(c);
+c=RoyallUI.card('Dialogs');c.append(row([['Confirm','soft',function(){RoyallUI.dialog({type:'confirm',title:'Confirm',text:'Cancellable confirmation.',icon:'❓',cancellable:true,number:2})}],['Warning','soft',function(){RoyallUI.dialog({type:'warning',title:'Warning',text:'Amber text + matching border warning action.',icon:'⚠️',cancellable:true,number:2})}],['Error','soft',function(){RoyallUI.dialog({type:'error',title:'Error',text:'Red error dialog.',icon:'✖️',cancellable:true,number:1})}],['Info','soft',function(){RoyallUI.dialog({type:'info',title:'Info',text:'Blue information dialog.',icon:'ℹ️',cancellable:true,number:1})}]]));c.append(row([['Choice','soft',function(){RoyallUI.dialog({type:'choice',title:'Choice',text:'Buttons wrap by text width.',icon:'🔘',cancellable:true,number:4})}],['Edit Name','soft',function(){RoyallUI.dialog({type:'input',title:'Edit Name',text:'Only input dialogs may use top gravity.',icon:'✏️',cancellable:true,number:2,gravity:'top'},function(a,v){RoyallUI.successToast(v||'Saved')})}],['Non-Cancel','soft',function(){RoyallUI.dialog({type:'info',title:'Non-cancellable',text:'Backdrop and Escape cannot dismiss this dialog.',icon:'🔒',cancellable:false,number:1})}]]));pages[2].appendChild(c);
+c=RoyallUI.card('Toasts');c.append(row([['Success','green',function(){RoyallUI.successToast('Success')}],['Warning','soft',function(){RoyallUI.warningToast('Warning')}],['Error','danger',function(){RoyallUI.errorToast('Error')}],['Info','blue',function(){RoyallUI.toast('Info','info')}]]));pages[2].appendChild(c);
+c=RoyallUI.card('Controls');var tb=RoyallUI.toggleButton({text:'Toggle me'});c.append(tb,row([['ON','soft',function(){tb.setState(true)}],['OFF','soft',function(){tb.setState(false)}],['Read','soft',function(){RoyallUI.infoDialog({title:'State',text:String(tb.getState())})}]]));pages[3].appendChild(c);
+c=RoyallUI.card('Bottom Bar + FAB');c.append(row([['Bottom Bar','green',function(){var b=RoyallUI.bottomBar([{text:'Primary',onClick:function(){RoyallUI.successToast('Primary')}},{text:'Secondary',onClick:function(){RoyallUI.warningToast('Secondary')}}]);setTimeout(function(){b.remove()},1800)}],['FAB','soft',function(){var b=RoyallUI.fab('Amber FAB',function(){RoyallUI.successToast('FAB')},true);setTimeout(function(){b.remove()},1800)}]]));pages[3].appendChild(c);
+function openActivity(n){ui.setHeader({icon:n===0?'📄':n===1?'⚙️':'✅',title:'Sample Activity '+(n+1),description:n===0?'Complete page one':n===1?'Complete page two':'Complete page three'});ui.setHeaderButton({text:'Back',tone:'green',onClick:closeActivity});ui.content.innerHTML='';var p=document.createElement('section');p.className='royall-page active';var card=RoyallUI.card(n===0?'Activity Home':n===1?'Activity Settings':'Activity Complete');card.append(RoyallUI.message('Complete page replacement inside the same HTML. Header and description are changed.'));card.append(RoyallUI.segmentedChips([{label:'A'},{label:'B'},{label:'C'},{label:'D'}]));var ar=RoyallUI.result('Activity result\nCopy below uses automatic blue style.');var arc=RoyallUI.card('Activity Result',{head:true,result:true,actions:[{text:'Copy',onClick:function(){RoyallUI.copy(ar.textContent)}}]});arc.append(ar);p.append(card,arc,row([['← Back','soft',function(){n?openActivity(n-1):closeActivity()}],['Next →','green',function(){n<2?openActivity(n+1):closeActivity()}]]));ui.content.appendChild(p)}
+function closeActivity(){ui.setHeader({icon:'🧩',title:'Royall UI Master',description:'Modular Component & Activity Tester'});ui.setHeaderButton({text:'Reset',tone:'red',onClick:function(){location.reload()}});ui.content.innerHTML='';ui.content.append(nav);pages.forEach(function(p){ui.content.appendChild(p)});showPage(0)}
+showPage(0);
 })();
 </script>
 </body>
