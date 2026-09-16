@@ -1,11 +1,8 @@
-(function(w){'use strict';
-function make(tag,cls,text){var e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e}
-var RoyallUI={};
-RoyallUI.mount=function(o){o=o||{};var root=typeof o.mount==='string'?document.querySelector(o.mount):(o.mount||document.body);if(!root)throw new Error('RoyallUI: mount not found');root.innerHTML='';root.className=((root.className||'')+' royall-app').trim();
-var top=make('header','royall-top'),icon=make('div','royall-icon',o.icon||'🥏'),head=make('div','royall-head'),title=make('h1','royall-title',o.title||'Royall Tool'),desc=make('div','royall-description',o.description||''),actions=make('div','royall-top-actions');
-head.append(title,desc);top.append(icon,head,actions);root.appendChild(top);
-var feature=make('div','royall-feature'),left=make('span','', '• Feature Provided by '),name=make('strong','',o.developer||'Araaf Royall');left.append(name,document.createTextNode(' ❣️'));feature.appendChild(left);root.appendChild(feature);if(o.status!=null)RoyallUI.setStatus(feature,o.status);root.appendChild(make('main','royall-content'));
-var ui={root:root,top:top,icon:icon,title:title,description:desc,actions:actions,feature:feature,content:root.querySelector('.royall-content'),setTitle:function(v){title.textContent=v==null?'':String(v)},setDescription:function(v){desc.textContent=v==null?'':String(v)},setIcon:function(v){icon.textContent=v==null?'':String(v)},setHeader:function(v){v=v||{};if(v.icon!==undefined)ui.setIcon(v.icon);if(v.title!==undefined)ui.setTitle(v.title);if(v.description!==undefined)ui.setDescription(v.description);if(v.status!==undefined)ui.setStatus(v.status)},setStatus:function(v){return RoyallUI.setStatus(feature,v)},setButton:function(v){actions.innerHTML='';if(!v)return null;var b=make('button','royall-top-button',v.text||'Action');b.type='button';if(typeof v.onClick==='function')b.onclick=v.onClick;actions.appendChild(b);return b},removeButton:function(){actions.innerHTML=''}};if(o.button)ui.setButton(o.button);return ui};
-RoyallUI.setStatus=function(feature,v){var old=feature.querySelector('.royall-status');if(old)old.remove();if(v==null)return null;var x=typeof v==='string'?{text:v}:{...v};var s=make('span','royall-status '+(x.mode||'success'),x.text||'Active ✔️');feature.appendChild(s);return s};
-w.RoyallUI=RoyallUI;
-})(window);
+import {attachHeader} from './header.js';
+
+const RoyallUI={};
+
+attachHeader(RoyallUI);
+
+window.RoyallUI=RoyallUI;
+export {RoyallUI};
