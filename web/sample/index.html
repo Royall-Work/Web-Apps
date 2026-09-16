@@ -1,16 +1,182 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#fff"><title>Royall UI Master • Final Tester</title><link rel="stylesheet" href="../core/master.css"></head>
-<body><div id="app"></div><script type="module">
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#fff">
+<title>Royall UI Master • Final Tester</title>
+<link rel="stylesheet" href="../core/master.css">
+</head>
+<body>
+<div id="app"></div>
+<script type="module">
 import {RoyallUI} from '../core/master.js';
-const ui=RoyallUI.mount({mount:'#app',icon:'🧩',title:'Royall UI Master',description:'Modular Component & Activity Tester',status:{text:'Active ✔️',mode:'success'},headerButton:{text:'Reset',tone:'red',onClick:()=>RoyallUI.confirm({icon:'♻️',title:'Reset Tester?',text:'Cancellable confirmation.',cancelText:'No',confirmText:'Reset'},()=>location.reload())}});
-const nav=RoyallUI.chipNav([{label:'Overview',value:0},{label:'Inputs',value:1},{label:'Dialogs',value:2},{label:'Controls',value:3}],showPage);const pages=[];for(let i=0;i<4;i++){const p=document.createElement('section');p.className='royall-page'+(i===0?' active':'');pages.push(p);ui.content.appendChild(p)}function showPage(n){pages.forEach((p,i)=>p.classList.toggle('active',i===n));nav.querySelectorAll('.royall-chip').forEach((b,i)=>b.classList.toggle('active',i===n))}ui.content.prepend(nav);function row(items){const r=document.createElement('div');r.className='royall-chip-row';items.forEach(x=>r.appendChild(RoyallUI.button(x[0],x[1]||'royall-btn soft',x[2])));return r}
-let c=RoyallUI.card('Master Architecture');c.append(RoyallUI.message('One Master entry assembles small JS/CSS parts. Runner pages only consume RoyallUI.'));pages[0].appendChild(c);
-c=RoyallUI.card('Segmented Chips • Fixed Colors');c.append(RoyallUI.message('2 = Green + Amber • 3 adds Blue • 4 adds Purple.'));c.append(RoyallUI.segmentedChips([{label:'Encrypt',value:'encrypt'},{label:'Decrypt',value:'decrypt'}],v=>RoyallUI.successToast(v)));c.append(RoyallUI.segmentedChips([{label:'Text',value:'text'},{label:'File',value:'file'},{label:'Folder',value:'folder'}],v=>RoyallUI.successToast(v)));c.append(RoyallUI.segmentedChips([{label:'One',value:1},{label:'Two',value:2},{label:'Three',value:3},{label:'Four',value:4}],v=>RoyallUI.successToast(v)));pages[0].appendChild(c);
-c=RoyallUI.card('Status — text only');c.append(row([['Success','green',()=>ui.setStatus('Active ✔️','success')],['Info','blue',()=>ui.setStatus('Ready ℹ️','info')],['Error','danger',()=>ui.setStatus('Offline ✖','error')],['Remove','soft',()=>ui.removeStatus()]]));pages[0].appendChild(c);
-c=RoyallUI.card('Activity');c.append(RoyallUI.message('A real activity-like full page can replace the current main content and header.'));c.append(RoyallUI.button('Open Activity →','royall-btn green',()=>openActivity(0)));pages[0].appendChild(c);
-let inp=RoyallUI.input({placeholder:'Single-line input',actions:[{text:'Copy',className:'royall-small-btn blue',onClick:x=>RoyallUI.copy(x.value)}]});c=RoyallUI.card('Input / EditText');c.appendChild(inp.el);pages[1].appendChild(c);let ta=RoyallUI.textarea({placeholder:'Multiline text…'});c=RoyallUI.card('Textarea',{head:true,stats:'Multiline',actions:[{text:'Clear',className:'royall-clear-small',onClick:()=>RoyallUI.clearConfirm(ta.textarea,'text')},{text:'Paste',className:'royall-paste-small',onClick:async()=>{const v=await RoyallUI.paste();if(v)ta.textarea.value=v}}]});c.appendChild(ta.el);pages[1].appendChild(c);const tog=RoyallUI.toggleButton({text:'Enable Feature',onChange:(on,b)=>b.setText(on?'Disable Feature':'Enable Feature')});c=RoyallUI.card('Toggle / Expand');c.appendChild(tog);const ex=document.createElement('div');ex.className='royall-expand';ex.append(RoyallUI.message('Expandable content lives anywhere.'));c.appendChild(RoyallUI.button('Toggle Content','royall-btn soft',()=>RoyallUI.toggle(ex)));c.appendChild(ex);pages[1].appendChild(c);
-c=RoyallUI.card('Dialogs');c.append(row([['Confirm','soft',()=>RoyallUI.confirm({icon:'❓',title:'Confirm',text:'Cancellable confirmation.',cancelText:'Cancel',confirmText:'Yes',cancellable:true})],['Warning','soft',()=>RoyallUI.warning({icon:'⚠️',title:'Warning',text:'Amber text + border warning action.',cancelText:'Cancel',confirmText:'Continue',cancellable:true})],['Error','soft',()=>RoyallUI.errorDialog({icon:'✖️',title:'Error',text:'Soft red action.',buttonText:'Close'})],['Info','soft',()=>RoyallUI.infoDialog({icon:'ℹ️',title:'Info',text:'Soft blue action.',buttonText:'OK'})]]));c.append(row([['Choice','soft',()=>RoyallUI.choice({icon:'🔘',title:'Choice',text:'Buttons wrap by text width.'},[{text:'Alpha'},{text:'Beta'},{text:'Gamma',theme:'warning'},{text:'Delta',theme:'danger'}])],['Prompt','soft',()=>RoyallUI.prompt({icon:'✏️',title:'Edit Name',text:'Top-gravity prompt.',value:'Royall',gravity:'top',cancelText:'Cancel',submitText:'Save'},v=>RoyallUI.successToast('Saved: '+v))],['Non-Cancel','soft',()=>RoyallUI.confirm({icon:'🔒',title:'Non-cancellable',text:'Backdrop and Escape do not close this.',cancellable:false,showCancel:false,confirmText:'Continue'})]]));pages[2].appendChild(c);
-c=RoyallUI.card('Result / Download',{head:true,result:true,stats:'sample',actions:[{text:'Copy',className:'royall-copy-small',onClick:()=>RoyallUI.copy(res.textContent)},{text:'Download',className:'royall-download-small',onClick:()=>RoyallUI.downloadNamed({extension:'.txt',value:'royall-test'},res.textContent)}]});const res=RoyallUI.result('Result line 1\nResult line 2\nLong values wrap automatically.');c.append(res);pages[2].appendChild(c);
-c=RoyallUI.card('Controls');const tb=RoyallUI.toggleButton({text:'Toggle me'});c.append(tb,row([['ON','soft',()=>tb.setState(true)],['OFF','soft',()=>tb.setState(false)],['Read','soft',()=>RoyallUI.infoDialog({title:'State',text:String(tb.getState())})]]));c.append(row([['Bottom Bar','green',()=>{const b=RoyallUI.bottomBar([{text:'Primary',onClick:()=>RoyallUI.successToast('Primary')},{text:'Secondary',onClick:()=>RoyallUI.warningToast('Secondary')}]);setTimeout(()=>b.remove(),3000)}],['FAB','soft',()=>{const b=RoyallUI.fab('Amber FAB',()=>RoyallUI.successToast('FAB'),true);setTimeout(()=>b.remove(),3000)}]]));pages[3].appendChild(c);
-let activityIndex=0;function openActivity(n){activityIndex=n;ui.setHeader({icon:n===0?'📄':n===1?'⚙️':'✅',title:'Sample Activity '+(n+1),description:n===0?'Complete page one':n===1?'Complete page two':'Complete page three'});ui.setHeaderButton({text:'Back',tone:'green',onClick:closeActivity});ui.content.innerHTML='';const p=document.createElement('section');p.className='royall-page active';const card=RoyallUI.card(n===0?'Activity Home':n===1?'Activity Settings':'Activity Complete');card.append(RoyallUI.message('This is a complete Activity-style page. The top title, description, icon and content are all changed.'));card.append(RoyallUI.segmentedChips([{label:'A',value:'a'},{label:'B',value:'b'},{label:'C',value:'c'}]));p.appendChild(card);p.appendChild(row([['← Back','soft',()=>n===0?closeActivity():openActivity(n-1)],['Next →','green',()=>n===2?closeActivity():openActivity(n+1)]]));ui.content.appendChild(p)}function closeActivity(){ui.setHeader({icon:'🧩',title:'Royall UI Master',description:'Modular Component & Activity Tester'});ui.setHeaderButton({text:'Reset',tone:'red',onClick:()=>location.reload()});ui.content.innerHTML='';ui.content.prepend(nav);pages.forEach(p=>ui.content.appendChild(p));showPage(0)}showPage(0);
-</script></body></html>
+
+const ui=RoyallUI.mount({
+  mount:'#app',
+  icon:'🧩',
+  title:'Royall UI Master',
+  description:'Modular Component & Activity Tester',
+  status:{text:'Active ✔️',mode:'success'},
+  headerButton:{text:'Reset',tone:'red',onClick:()=>RoyallUI.confirm({icon:'♻️',title:'Reset Tester?',text:'Cancellable confirmation.',cancelText:'No',confirmText:'Reset'},()=>location.reload())}
+});
+
+const nav=RoyallUI.chipNav([
+  {label:'Overview',value:0},
+  {label:'Inputs',value:1},
+  {label:'Dialogs',value:2},
+  {label:'Controls',value:3}
+],showPage);
+const pages=[];
+for(let i=0;i<4;i++){const p=document.createElement('section');p.className='royall-page'+(i===0?' active':'');pages.push(p);ui.content.appendChild(p)}
+ui.content.prepend(nav);
+function showPage(n){pages.forEach((p,i)=>p.classList.toggle('active',i===n));nav.querySelectorAll('.royall-chip').forEach((b,i)=>b.classList.toggle('active',i===n))}
+function row(items){const r=document.createElement('div');r.className='royall-chip-row';items.forEach(x=>r.appendChild(RoyallUI.button(x[0],x[1]||'royall-btn soft',x[2])));return r}
+
+/* Overview */
+let c=RoyallUI.card('Master Architecture');
+c.append(RoyallUI.message('One Master entry assembles small JS/CSS parts. Runner pages only consume RoyallUI.'));
+pages[0].appendChild(c);
+
+c=RoyallUI.card('Segmented Chips • Fixed by Count');
+c.append(RoyallUI.message('2 = Green + Amber • 3 = Green + Amber + Blue • 4 = Green + Amber + Blue + Purple. No caller colors are supplied.'));
+c.append(RoyallUI.segmentedChips([{label:'Encrypt',value:'encrypt'},{label:'Decrypt',value:'decrypt'}],v=>RoyallUI.successToast('2-chip: '+v)));
+c.append(RoyallUI.segmentedChips([{label:'Text',value:'text'},{label:'File',value:'file'},{label:'Folder',value:'folder'}],v=>RoyallUI.successToast('3-chip: '+v)));
+c.append(RoyallUI.segmentedChips([{label:'One',value:1},{label:'Two',value:2},{label:'Three',value:3},{label:'Four',value:4}],v=>RoyallUI.successToast('4-chip: '+v)));
+pages[0].appendChild(c);
+
+c=RoyallUI.card('Status — Text Only');
+c.append(row([
+  ['Success','green',()=>ui.setStatus('Active ✔️','success')],
+  ['Info','blue',()=>ui.setStatus('Ready ℹ️','info')],
+  ['Error','danger',()=>ui.setStatus('Offline ✖','error')],
+  ['Remove','soft',()=>ui.removeStatus()]
+]));
+pages[0].appendChild(c);
+
+c=RoyallUI.card('Activity');
+c.append(RoyallUI.message('A complete activity-like page can replace the current main page and change the top icon, title and description.'));
+c.append(RoyallUI.button('Open Activity →','royall-btn green',()=>openActivity(0)));
+pages[0].appendChild(c);
+
+/* Inputs */
+let inp=RoyallUI.input({placeholder:'Single-line input',actions:[
+  {text:'Copy',onClick:x=>RoyallUI.copy(x.value)}
+]});
+c=RoyallUI.card('Input / EditText — Copy Defaults to Blue');
+c.appendChild(inp.el);
+pages[1].appendChild(c);
+
+let ta=RoyallUI.textarea({placeholder:'Multiline text…'});
+c=RoyallUI.card('Textarea Actions — Default Semantic Colors',{head:true,stats:'No className supplied',actions:[
+  {text:'Clear',onClick:()=>RoyallUI.clearConfirm(ta.textarea,'text')},
+  {text:'Paste',onClick:async()=>{const v=await RoyallUI.paste();if(v)ta.textarea.value=v}}
+]});
+c.appendChild(ta.el);
+pages[1].appendChild(c);
+
+const ex=document.createElement('div');
+ex.className='royall-expand';
+ex.append(RoyallUI.message('Expandable content lives anywhere.'));
+c=RoyallUI.card('Toggle / Expand');
+c.appendChild(RoyallUI.button('Toggle Content','royall-btn soft',()=>RoyallUI.toggle(ex)));
+c.appendChild(ex);
+pages[1].appendChild(c);
+
+const res=RoyallUI.result('Result line 1\nResult line 2\nLong values wrap automatically.');
+c=RoyallUI.card('Result / Copy / Download',{head:true,result:true,stats:'Copy style is automatic',actions:[
+  {text:'Copy',onClick:()=>RoyallUI.copy(res.textContent)},
+  {text:'Download',onClick:()=>RoyallUI.downloadNamed({extension:'.txt',value:'royall-test'},res.textContent)}
+]});
+c.append(res);
+pages[1].appendChild(c);
+
+/* Dialogs */
+c=RoyallUI.card('Dialogs');
+c.append(row([
+  ['Confirm','soft',()=>RoyallUI.confirm({icon:'❓',title:'Confirm',text:'Cancellable confirmation.',cancelText:'Cancel',confirmText:'Yes',cancellable:true})],
+  ['Warning','soft',()=>RoyallUI.warning({icon:'⚠️',title:'Warning',text:'Amber text + matching border warning action.',cancelText:'Cancel',confirmText:'Continue',cancellable:true})],
+  ['Error','soft',()=>RoyallUI.errorDialog({icon:'✖️',title:'Error',text:'Red error dialog.',buttonText:'Close'})],
+  ['Info','soft',()=>RoyallUI.infoDialog({icon:'ℹ️',title:'Info',text:'Blue information dialog.',buttonText:'OK'})]
+]));
+c.append(row([
+  ['Choice','soft',()=>RoyallUI.choice({icon:'🔘',title:'Choice',text:'Buttons wrap by text width.'},[
+    {text:'Alpha'},{text:'Beta'},{text:'Gamma',theme:'warning'},{text:'Delta',theme:'danger'}
+  ])],
+  ['Edit Name','soft',()=>RoyallUI.prompt({icon:'✏️',title:'Edit Name',text:'Top-gravity is allowed for input dialogs.',value:'Royall',gravity:'top',cancelText:'Cancel',submitText:'Save'},v=>RoyallUI.successToast('Saved: '+v))],
+  ['Non-Cancel','soft',()=>RoyallUI.confirm({icon:'🔒',title:'Non-cancellable',text:'Backdrop and Escape do not close this dialog.',cancellable:false,showCancel:false,confirmText:'Continue'})]
+]));
+pages[2].appendChild(c);
+
+c=RoyallUI.card('Toast Variants');
+c.append(row([
+  ['Success','green',()=>RoyallUI.successToast('Success toast')],
+  ['Warning','soft',()=>RoyallUI.warningToast('Warning toast')],
+  ['Error','danger',()=>RoyallUI.errorToast('Error toast')],
+  ['Info','blue',()=>RoyallUI.toast('Info toast','info')]
+]));
+pages[2].appendChild(c);
+
+/* Controls */
+c=RoyallUI.card('Controls');
+const tb=RoyallUI.toggleButton({text:'Toggle me'});
+c.append(tb,row([
+  ['ON','soft',()=>tb.setState(true)],
+  ['OFF','soft',()=>tb.setState(false)],
+  ['Read','soft',()=>RoyallUI.infoDialog({title:'State',text:String(tb.getState())})]
+]));
+pages[3].appendChild(c);
+
+c=RoyallUI.card('Bottom Bar + FAB');
+c.append(row([
+  ['Bottom Bar','green',()=>{const b=RoyallUI.bottomBar([{text:'Primary',onClick:()=>RoyallUI.successToast('Primary')},{text:'Secondary',onClick:()=>RoyallUI.warningToast('Secondary')}]);setTimeout(()=>b.remove(),3000)}],
+  ['FAB','soft',()=>{const b=RoyallUI.fab('Amber FAB',()=>RoyallUI.successToast('FAB'),true);setTimeout(()=>b.remove(),3000)}]
+]));
+pages[3].appendChild(c);
+
+let activityIndex=0;
+function openActivity(n){
+  activityIndex=n;
+  ui.setHeader({
+    icon:n===0?'📄':n===1?'⚙️':'✅',
+    title:'Sample Activity '+(n+1),
+    description:n===0?'Complete page one':n===1?'Complete page two':'Complete page three'
+  });
+  ui.setHeaderButton({text:'Back',tone:'green',onClick:closeActivity});
+  ui.content.innerHTML='';
+  const p=document.createElement('section');
+  p.className='royall-page active';
+  const card=RoyallUI.card(n===0?'Activity Home':n===1?'Activity Settings':'Activity Complete');
+  card.append(RoyallUI.message('This is a complete Activity-style page. The top title, description and icon are changed.'));
+  card.append(RoyallUI.segmentedChips([
+    {label:'A',value:'a'},
+    {label:'B',value:'b'},
+    {label:'C',value:'c'},
+    {label:'D',value:'d'}
+  ]));
+  const activityResult=RoyallUI.result('Activity result\nCopy button below is intentionally created without className.');
+  const activityResultCard=RoyallUI.card('Activity Result',{head:true,result:true,actions:[
+    {text:'Copy',onClick:()=>RoyallUI.copy(activityResult.textContent)}
+  ]});
+  activityResultCard.append(activityResult);
+  p.appendChild(card);
+  p.appendChild(activityResultCard);
+  p.appendChild(row([
+    ['← Back','soft',()=>n===0?closeActivity():openActivity(n-1)],
+    ['Next →','green',()=>n===2?closeActivity():openActivity(n+1)]
+  ]));
+  ui.content.appendChild(p);
+}
+function closeActivity(){
+  ui.setHeader({icon:'🧩',title:'Royall UI Master',description:'Modular Component & Activity Tester'});
+  ui.setHeaderButton({text:'Reset',tone:'red',onClick:()=>location.reload()});
+  ui.content.innerHTML='';
+  ui.content.prepend(nav);
+  pages.forEach(p=>ui.content.appendChild(p));
+  showPage(0);
+}
+
+showPage(0);
+</script>
+</body>
+</html>
