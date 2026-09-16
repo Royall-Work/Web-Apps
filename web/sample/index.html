@@ -1,144 +1,16 @@
 <!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#fff">
-<title>Royall UI Engine • Final Tester</title>
-<link rel="stylesheet" href="../core/royall-ui.css">
-</head>
-<body>
-<div id="app"></div>
-<script src="../core/royall-ui.js"></script>
-<script>
-(function(){
-'use strict';
-
-var baseHeader={icon:'🧩',title:'Royall UI Engine',description:'Final Multi-Screen Component Tester'};
-var ui=RoyallUI.mount({
-  mount:'#app',
-  icon:baseHeader.icon,
-  title:baseHeader.title,
-  description:baseHeader.description,
-  status:{text:'Engine Active ✔️',mode:'success'},
-  headerButton:{text:'Reset',tone:'red',onClick:resetTester}
-});
-
-function add(p,x){p.appendChild(x);return x}
-function btn(text,cls,fn){return RoyallUI.button(text,'royall-btn '+(cls||'soft'),fn)}
-function cardButtonRow(items){var row=document.createElement('div');row.className='royall-chip-row';items.forEach(function(x){row.appendChild(btn(x[0],x[1]||'soft',x[2]))});return row}
-
-var mainNav=RoyallUI.chipNav([
-  {label:'Overview',value:0},
-  {label:'Inputs',value:1},
-  {label:'Dialogs',value:2},
-  {label:'Controls',value:3}
-],showMain);
-var mainPages=[];
-for(var i=0;i<4;i++){var p=document.createElement('section');p.className='royall-page'+(i===0?' active':'');mainPages.push(p)}
-function installMain(){ui.content.innerHTML='';ui.content.appendChild(mainNav);mainPages.forEach(function(p){ui.content.appendChild(p)});showMain(mainIndex)}
-var mainIndex=0;
-function showMain(n){mainIndex=Math.max(0,Math.min(mainPages.length-1,n));mainPages.forEach(function(p,i){p.classList.toggle('active',i===mainIndex)});Array.prototype.forEach.call(mainNav.children,function(b,i){b.classList.toggle('active',i===mainIndex)})}
-
-/* Overview */
-var parent=RoyallUI.card('Parent Layout');add(parent,(function(){var x=document.createElement('div');x.className='royall-message';x.textContent='Fixed parent header + attribution + status + runner content. Status is text-only and stays at the far right.';return x})());add(mainPages[0],parent);
-
-var headerCard=RoyallUI.card('Header + Status');
-add(headerCard,cardButtonRow([
- ['Red','danger',function(){ui.setHeaderButton({text:'Red',tone:'red',onClick:function(){RoyallUI.errorToast('Red header action')}})}],
- ['Green','green',function(){ui.setHeaderButton({text:'Green',tone:'green',onClick:function(){RoyallUI.successToast('Green header action')}})}],
- ['Blue','blue',function(){ui.setHeaderButton({text:'Blue',tone:'blue',onClick:function(){RoyallUI.toast('Blue header action','info')}})}],
- ['Amber','soft',function(){ui.setHeaderButton({text:'Amber',tone:'amber',onClick:function(){RoyallUI.warningToast('Amber header action')}})}]
-]));
-add(headerCard,cardButtonRow([
- ['Status Green','green',function(){ui.setStatus('Active ✔️','success')}],
- ['Status Red','danger',function(){ui.setStatus('Offline ✖','error')}],
- ['Status Blue','blue',function(){ui.setStatus('Ready ℹ️','info')}],
- ['Remove','soft',function(){ui.removeStatus()}]
-]));add(mainPages[0],headerCard);
-
-var segCard=RoyallUI.card('Segmented Chips • Anywhere');
-add(segCard,(function(){var x=document.createElement('div');x.className='royall-message';x.textContent='The same component can be appended inside any card or custom layout. Colors are assigned by count: 2 = Green + Amber, 3 adds Blue, 4 adds Purple.';return x})());
-add(segCard,RoyallUI.segmentedChips([{label:'Encrypt',value:'encrypt'},{label:'Decrypt',value:'decrypt'}],function(v){RoyallUI.successToast('2-chip: '+v)}));
-add(segCard,RoyallUI.segmentedChips([{label:'Text',value:'text'},{label:'File',value:'file'},{label:'Folder',value:'folder'}],function(v){RoyallUI.successToast('3-chip: '+v)}));
-add(segCard,RoyallUI.segmentedChips([{label:'One',value:1},{label:'Two',value:2},{label:'Three',value:3},{label:'Four',value:4}],function(v){RoyallUI.successToast('4-chip: '+v)}));
-add(mainPages[0],segCard);
-
-var activityCard=RoyallUI.card('Complete Activity Screens');
-add(activityCard,(function(){var x=document.createElement('div');x.className='royall-message';x.textContent='Opens complete new Activity-style pages inside the same HTML document, including a new title, description, icon and full content.';return x})());
-add(activityCard,btn('Open Activity →','green',function(){openActivity(0)}));add(mainPages[0],activityCard);
-
-/* Inputs */
-var input=RoyallUI.input({placeholder:'Single-line input',actions:[
- {text:'Paste',className:'royall-small-btn blue',onClick:async function(x){var v=await RoyallUI.paste();if(v)x.value=v}},
- {text:'Copy',className:'royall-small-btn blue',onClick:function(x){RoyallUI.copy(x.value)}}
-]});var inputCard=RoyallUI.card('Input Field');add(inputCard,input.el);add(mainPages[1],inputCard);
-var area=RoyallUI.textarea({placeholder:'Type or paste multiline text...'});var areaCard=RoyallUI.card('Textarea',{head:true,stats:'Multiline',actions:[
- {text:'Clear',className:'royall-clear-small',onClick:function(){RoyallUI.clearConfirm(area.textarea,'text')}},
- {text:'Paste',className:'royall-paste-small',onClick:async function(){var v=await RoyallUI.paste();if(v)area.textarea.value=v}}
-]});add(areaCard,area.el);add(mainPages[1],areaCard);
-var expandBox=document.createElement('div');expandBox.className='royall-expand';expandBox.innerHTML='<div class="royall-divider"></div><div class="royall-empty">Expandable content can be placed anywhere.</div>';var expandCard=RoyallUI.card('Expandable Content');add(expandCard,expandBox);add(expandCard,btn('Toggle Content','soft',function(){RoyallUI.toggle(expandBox)}));add(mainPages[1],expandCard);
-var result=RoyallUI.result('Result line 1\nResult line 2\nResult line 3\nLong values wrap automatically without horizontal page overflow.');var resultCard=RoyallUI.card('Result + Copy + Download',{head:true,result:true,stats:'4 lines',actions:[
- {text:'Copy',className:'royall-copy-small',onClick:function(){RoyallUI.copy(result.textContent)}},
- {text:'Download',className:'royall-download-small',onClick:function(){RoyallUI.downloadNamed({title:'Export Result',extension:'.txt',value:'royall-result'},result.textContent)}}
-]});add(resultCard,result);add(mainPages[1],resultCard);
-
-/* Dialogs */
-var dialogCard=RoyallUI.card('Dialog Suite');
-add(dialogCard,cardButtonRow([
- ['Confirm','soft',function(){RoyallUI.confirm({icon:'❓',title:'Confirm Action',text:'Standard cancellable confirmation.',cancelText:'No',confirmText:'Yes',cancellable:true},function(){RoyallUI.successToast('Confirmed')})}],
- ['Warning','soft',function(){RoyallUI.warning({icon:'⚠️',title:'Warning',text:'Amber outlined action keeps warning text and border color.',cancelText:'Cancel',confirmText:'Continue',cancellable:true})}],
- ['Error','soft',function(){RoyallUI.errorDialog({icon:'✖️',title:'Error',text:'Red error dialog.',buttonText:'Close',cancellable:true})}],
- ['Info','soft',function(){RoyallUI.infoDialog({icon:'ℹ️',title:'Information',text:'Blue information dialog.',buttonText:'OK',cancellable:true})}]
-]));
-add(dialogCard,cardButtonRow([
- ['Choice','soft',function(){RoyallUI.choice({icon:'🔘',title:'Choose Option',text:'Buttons wrap naturally at text width.',cancellable:true},[
-   {text:'Alpha',onClick:function(){RoyallUI.successToast('Alpha')}},
-   {text:'Beta',onClick:function(){RoyallUI.warningToast('Beta')}},
-   {text:'Gamma',theme:'warning',onClick:function(){RoyallUI.warningToast('Gamma')}},
-   {text:'Delta',theme:'danger',onClick:function(){RoyallUI.errorToast('Delta')}},
-   {text:'Epsilon',onClick:function(){RoyallUI.infoDialog({title:'Nested',text:'Dialog opened from a choice.'})}}
- ])}],
- ['Prompt','soft',function(){RoyallUI.prompt({icon:'✏️',title:'Edit Name',text:'Top-gravity prompt with optional cancel.',placeholder:'Name',value:'Royall',gravity:'top',cancelText:'Cancel',submitText:'Save',cancellable:true},function(v){RoyallUI.successToast('Saved: '+v)})}],
- ['No Cancel','soft',function(){RoyallUI.confirm({icon:'🔒',title:'Non-cancellable',text:'Backdrop tap and Escape cannot dismiss this dialog. Use the action button.',showCancel:false,cancellable:false,confirmText:'Understood'},function(){RoyallUI.successToast('Closed explicitly')})}]
-]));
-add(mainPages[2],dialogCard);
-var toastCard=RoyallUI.card('Toast Variants');add(toastCard,cardButtonRow([
- ['Success','green',function(){RoyallUI.successToast('Success toast')}],
- ['Warning','soft',function(){RoyallUI.warningToast('Warning toast')}],
- ['Error','danger',function(){RoyallUI.errorToast('Error toast')}],
- ['Info','blue',function(){RoyallUI.toast('Info toast','info')}]
-]));add(mainPages[2],toastCard);
-
-/* Controls */
-var controlCard=RoyallUI.card('Controls');var toggle=RoyallUI.toggleButton({text:'Enable Feature',onChange:function(on,b){b.setText(on?'Disable Feature':'Enable Feature');RoyallUI.successToast(on?'Enabled':'Disabled')}});add(controlCard,toggle);add(controlCard,cardButtonRow([
- ['Set ON','soft',function(){toggle.setState(true)}],['Set OFF','soft',function(){toggle.setState(false)}],['Read State','soft',function(){RoyallUI.infoDialog({title:'Toggle State',text:String(toggle.getState()),cancellable:true})}]
-]));add(mainPages[3],controlCard);
-var bottomCard=RoyallUI.card('Bottom Bar + FAB');add(bottomCard,cardButtonRow([
- ['2 Button Bar','green',function(){var b=RoyallUI.bottomBar([{text:'Primary',onClick:function(){RoyallUI.successToast('Primary clicked')}},{text:'Secondary',onClick:function(){RoyallUI.warningToast('Secondary clicked')}}]);setTimeout(function(){b.remove()},4000)}],
- ['Amber FAB','soft',function(){var b=RoyallUI.fab('Floating Action',function(){RoyallUI.successToast('FAB clicked')},true);setTimeout(function(){b.remove()},4000)}]
-]));add(mainPages[3],bottomCard);
-var runtime=RoyallUI.card('Runtime Header API');add(runtime,cardButtonRow([
- ['Title','soft',function(){ui.setTitle('Runtime Title')}],['Description','soft',function(){ui.setDescription('Runtime description changed')}],['Icon','soft',function(){ui.setIcon('🚀')}],['Restore','green',function(){ui.setHeader(baseHeader)}]
-]));add(mainPages[3],runtime);
-
-/* True Activity pages in same HTML */
-var activityIndex=0;
-function openActivity(n){activityIndex=Math.max(0,Math.min(2,n));ui.setHeader({icon:activityIndex===0?'📄':activityIndex===1?'⚙️':'✅',title:activityIndex===0?'Sample Activity':'Sample Activity '+(activityIndex+1),description:activityIndex===0?'A complete new page inside the same HTML':'Activity screen '+(activityIndex+1)+' • changed title + description'});ui.setHeaderButton({text:'Back',tone:'green',onClick:function(){closeActivity()}});renderActivity()}
-function renderActivity(){ui.content.innerHTML='';var page=document.createElement('section');page.className='royall-page active';var top=RoyallUI.card(activityIndex===0?'Activity Home':activityIndex===1?'Activity Settings':'Activity Complete');var msg=document.createElement('div');msg.className='royall-message';msg.textContent=activityIndex===0?'This is a complete Activity-style page. The parent header has changed too.':activityIndex===1?'This is Activity 2. The same HTML document now behaves like a different page.':'This is the final Activity. Header title, description and icon are all independent from the main tester.';add(top,msg);add(page,top);
-var details=RoyallUI.card('Screen Features');add(details,cardButtonRow([
- ['Segmented', 'soft', function(){var d=RoyallUI.dialog({icon:'🎛️',title:'Segmented Chips',text:'They can be inserted anywhere in this new Activity page.',cancellable:true});add(d.box,RoyallUI.segmentedChips([{label:'A',value:'a'},{label:'B',value:'b'},{label:'C',value:'c'}]))}],
- ['Warning','soft',function(){RoyallUI.warning({title:'Activity Warning',text:'Warning keeps amber text + border.',cancelText:'Cancel',confirmText:'Continue',cancellable:true})}],
- ['Non-Cancel','soft',function(){RoyallUI.infoDialog({title:'Locked Activity',text:'Use OK to close. Backdrop and Escape do nothing.',buttonText:'OK',cancellable:false})}]
-]));add(page,details);
-ui.content.appendChild(page);
-var nav=document.createElement('div');nav.className='royall-activity-nav';var back=btn('← Back','soft',function(){if(activityIndex===0)closeActivity();else{activityIndex--;openActivity(activityIndex)}});back.classList.add('royall-activity-back');var next=btn(activityIndex===2?'Finish ✓':'Next →','green',function(){if(activityIndex===2)closeActivity();else{activityIndex++;openActivity(activityIndex)}});next.classList.add('royall-activity-primary');nav.append(back,next);ui.content.appendChild(nav)}
-function closeActivity(){ui.setHeader(baseHeader);ui.setHeaderButton({text:'Reset',tone:'red',onClick:resetTester});installMain()}
-
-function resetTester(){activityIndex=0;mainIndex=0;ui.setHeader(baseHeader);ui.setHeaderButton({text:'Reset',tone:'red',onClick:resetTester});ui.setStatus('Engine Active ✔️','success');installMain();RoyallUI.successToast('Tester reset')}
-
-installMain();
-})();
-</script>
-</body>
-</html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#fff"><title>Royall UI Master • Final Tester</title><link rel="stylesheet" href="../core/master.css"></head>
+<body><div id="app"></div><script type="module">
+import {RoyallUI} from '../core/master.js';
+const ui=RoyallUI.mount({mount:'#app',icon:'🧩',title:'Royall UI Master',description:'Modular Component & Activity Tester',status:{text:'Active ✔️',mode:'success'},headerButton:{text:'Reset',tone:'red',onClick:()=>RoyallUI.confirm({icon:'♻️',title:'Reset Tester?',text:'Cancellable confirmation.',cancelText:'No',confirmText:'Reset'},()=>location.reload())}});
+const nav=RoyallUI.chipNav([{label:'Overview',value:0},{label:'Inputs',value:1},{label:'Dialogs',value:2},{label:'Controls',value:3}],showPage);const pages=[];for(let i=0;i<4;i++){const p=document.createElement('section');p.className='royall-page'+(i===0?' active':'');pages.push(p);ui.content.appendChild(p)}function showPage(n){pages.forEach((p,i)=>p.classList.toggle('active',i===n));nav.querySelectorAll('.royall-chip').forEach((b,i)=>b.classList.toggle('active',i===n))}ui.content.prepend(nav);function row(items){const r=document.createElement('div');r.className='royall-chip-row';items.forEach(x=>r.appendChild(RoyallUI.button(x[0],x[1]||'royall-btn soft',x[2])));return r}
+let c=RoyallUI.card('Master Architecture');c.append(RoyallUI.message('One Master entry assembles small JS/CSS parts. Runner pages only consume RoyallUI.'));pages[0].appendChild(c);
+c=RoyallUI.card('Segmented Chips • Fixed Colors');c.append(RoyallUI.message('2 = Green + Amber • 3 adds Blue • 4 adds Purple.'));c.append(RoyallUI.segmentedChips([{label:'Encrypt',value:'encrypt'},{label:'Decrypt',value:'decrypt'}],v=>RoyallUI.successToast(v)));c.append(RoyallUI.segmentedChips([{label:'Text',value:'text'},{label:'File',value:'file'},{label:'Folder',value:'folder'}],v=>RoyallUI.successToast(v)));c.append(RoyallUI.segmentedChips([{label:'One',value:1},{label:'Two',value:2},{label:'Three',value:3},{label:'Four',value:4}],v=>RoyallUI.successToast(v)));pages[0].appendChild(c);
+c=RoyallUI.card('Status — text only');c.append(row([['Success','green',()=>ui.setStatus('Active ✔️','success')],['Info','blue',()=>ui.setStatus('Ready ℹ️','info')],['Error','danger',()=>ui.setStatus('Offline ✖','error')],['Remove','soft',()=>ui.removeStatus()]]));pages[0].appendChild(c);
+c=RoyallUI.card('Activity');c.append(RoyallUI.message('A real activity-like full page can replace the current main content and header.'));c.append(RoyallUI.button('Open Activity →','royall-btn green',()=>openActivity(0)));pages[0].appendChild(c);
+let inp=RoyallUI.input({placeholder:'Single-line input',actions:[{text:'Copy',className:'royall-small-btn blue',onClick:x=>RoyallUI.copy(x.value)}]});c=RoyallUI.card('Input / EditText');c.appendChild(inp.el);pages[1].appendChild(c);let ta=RoyallUI.textarea({placeholder:'Multiline text…'});c=RoyallUI.card('Textarea',{head:true,stats:'Multiline',actions:[{text:'Clear',className:'royall-clear-small',onClick:()=>RoyallUI.clearConfirm(ta.textarea,'text')},{text:'Paste',className:'royall-paste-small',onClick:async()=>{const v=await RoyallUI.paste();if(v)ta.textarea.value=v}}]});c.appendChild(ta.el);pages[1].appendChild(c);const tog=RoyallUI.toggleButton({text:'Enable Feature',onChange:(on,b)=>b.setText(on?'Disable Feature':'Enable Feature')});c=RoyallUI.card('Toggle / Expand');c.appendChild(tog);const ex=document.createElement('div');ex.className='royall-expand';ex.append(RoyallUI.message('Expandable content lives anywhere.'));c.appendChild(RoyallUI.button('Toggle Content','royall-btn soft',()=>RoyallUI.toggle(ex)));c.appendChild(ex);pages[1].appendChild(c);
+c=RoyallUI.card('Dialogs');c.append(row([['Confirm','soft',()=>RoyallUI.confirm({icon:'❓',title:'Confirm',text:'Cancellable confirmation.',cancelText:'Cancel',confirmText:'Yes',cancellable:true})],['Warning','soft',()=>RoyallUI.warning({icon:'⚠️',title:'Warning',text:'Amber text + border warning action.',cancelText:'Cancel',confirmText:'Continue',cancellable:true})],['Error','soft',()=>RoyallUI.errorDialog({icon:'✖️',title:'Error',text:'Soft red action.',buttonText:'Close'})],['Info','soft',()=>RoyallUI.infoDialog({icon:'ℹ️',title:'Info',text:'Soft blue action.',buttonText:'OK'})]]));c.append(row([['Choice','soft',()=>RoyallUI.choice({icon:'🔘',title:'Choice',text:'Buttons wrap by text width.'},[{text:'Alpha'},{text:'Beta'},{text:'Gamma',theme:'warning'},{text:'Delta',theme:'danger'}])],['Prompt','soft',()=>RoyallUI.prompt({icon:'✏️',title:'Edit Name',text:'Top-gravity prompt.',value:'Royall',gravity:'top',cancelText:'Cancel',submitText:'Save'},v=>RoyallUI.successToast('Saved: '+v))],['Non-Cancel','soft',()=>RoyallUI.confirm({icon:'🔒',title:'Non-cancellable',text:'Backdrop and Escape do not close this.',cancellable:false,showCancel:false,confirmText:'Continue'})]]));pages[2].appendChild(c);
+c=RoyallUI.card('Result / Download',{head:true,result:true,stats:'sample',actions:[{text:'Copy',className:'royall-copy-small',onClick:()=>RoyallUI.copy(res.textContent)},{text:'Download',className:'royall-download-small',onClick:()=>RoyallUI.downloadNamed({extension:'.txt',value:'royall-test'},res.textContent)}]});const res=RoyallUI.result('Result line 1\nResult line 2\nLong values wrap automatically.');c.append(res);pages[2].appendChild(c);
+c=RoyallUI.card('Controls');const tb=RoyallUI.toggleButton({text:'Toggle me'});c.append(tb,row([['ON','soft',()=>tb.setState(true)],['OFF','soft',()=>tb.setState(false)],['Read','soft',()=>RoyallUI.infoDialog({title:'State',text:String(tb.getState())})]]));c.append(row([['Bottom Bar','green',()=>{const b=RoyallUI.bottomBar([{text:'Primary',onClick:()=>RoyallUI.successToast('Primary')},{text:'Secondary',onClick:()=>RoyallUI.warningToast('Secondary')}]);setTimeout(()=>b.remove(),3000)}],['FAB','soft',()=>{const b=RoyallUI.fab('Amber FAB',()=>RoyallUI.successToast('FAB'),true);setTimeout(()=>b.remove(),3000)}]]));pages[3].appendChild(c);
+let activityIndex=0;function openActivity(n){activityIndex=n;ui.setHeader({icon:n===0?'📄':n===1?'⚙️':'✅',title:'Sample Activity '+(n+1),description:n===0?'Complete page one':n===1?'Complete page two':'Complete page three'});ui.setHeaderButton({text:'Back',tone:'green',onClick:closeActivity});ui.content.innerHTML='';const p=document.createElement('section');p.className='royall-page active';const card=RoyallUI.card(n===0?'Activity Home':n===1?'Activity Settings':'Activity Complete');card.append(RoyallUI.message('This is a complete Activity-style page. The top title, description, icon and content are all changed.'));card.append(RoyallUI.segmentedChips([{label:'A',value:'a'},{label:'B',value:'b'},{label:'C',value:'c'}]));p.appendChild(card);p.appendChild(row([['← Back','soft',()=>n===0?closeActivity():openActivity(n-1)],['Next →','green',()=>n===2?closeActivity():openActivity(n+1)]]));ui.content.appendChild(p)}function closeActivity(){ui.setHeader({icon:'🧩',title:'Royall UI Master',description:'Modular Component & Activity Tester'});ui.setHeaderButton({text:'Reset',tone:'red',onClick:()=>location.reload()});ui.content.innerHTML='';ui.content.prepend(nav);pages.forEach(p=>ui.content.appendChild(p));showPage(0)}showPage(0);
+</script></body></html>
