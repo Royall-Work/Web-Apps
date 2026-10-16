@@ -1,0 +1,246 @@
+{
+  "app": {
+    "name": "Cleaner Royall",
+    "title": "Documentation & FAQs",
+    "description": "Answers, guides and technical references in one place.",
+    "icon": "",
+    "version": "Preview"
+  },
+  "categories": [
+    {
+      "id": "general",
+      "title": "General",
+      "description": "Getting started and common questions",
+      "icon": "help",
+      "theme": "blue"
+    },
+    {
+      "id": "premium",
+      "title": "Premium",
+      "description": "Premium access and troubleshooting",
+      "icon": "crown",
+      "theme": "amber"
+    },
+    {
+      "id": "cleaner-model",
+      "title": "Cleaner Model",
+      "description": "Data structures and technical usage",
+      "icon": "code",
+      "theme": "teal"
+    }
+  ],
+  "entries": [
+    {
+      "id": "getting-started",
+      "type": "faq",
+      "category": "general",
+      "title": "Where should I start?",
+      "summary": "A quick guide to finding the information you need.",
+      "tags": ["basics", "getting started"],
+      "updated": "2026-10-16",
+      "featured": true,
+      "content": [
+        {
+          "type": "markdown",
+          "text": "Welcome to the **Cleaner Royall Documentation & FAQs** preview. Use the search bar to find an answer, or choose a category to narrow the list.\n\n- **General** contains common help articles.\n- **Premium** is for premium-related information.\n- **Cleaner Model** contains technical references and code examples."
+        },
+        {
+          "type": "callout",
+          "style": "tip",
+          "title": "For this test",
+          "text": "These are sample entries to demonstrate the interface. Replace the sample text with your verified documentation before publishing."
+        }
+      ],
+      "related": ["faq-search", "cleaner-model-json"]
+    },
+    {
+      "id": "faq-search",
+      "type": "faq",
+      "category": "general",
+      "title": "How does search work?",
+      "summary": "Search titles, summaries, tags and text in article content.",
+      "tags": ["search", "filter", "find"],
+      "updated": "2026-10-16",
+      "content": [
+        {
+          "type": "markdown",
+          "text": "Enter a word or phrase in the search field. Search checks each entry's **title, summary, tags, category and content text**. You can combine search with the FAQs or Documentation filter."
+        },
+        {
+          "type": "callout",
+          "style": "note",
+          "title": "Tip",
+          "text": "Use **All content** to remove the type filter. Choose *View all* or the bottom **All articles** action to clear every filter."
+        }
+      ],
+      "related": ["getting-started"]
+    },
+    {
+      "id": "sample-markdown",
+      "type": "documentation",
+      "category": "general",
+      "title": "Supported text formatting",
+      "summary": "A small example of the built-in Markdown-like renderer.",
+      "tags": ["markdown", "formatting", "text"],
+      "updated": "2026-10-16",
+      "featured": false,
+      "content": [
+        {
+          "type": "markdown",
+          "text": "## Readable articles\n\nUse **bold text**, *italic text*, `inline code`, links like [OpenAI](https://openai.com), and simple lists.\n\n> Important notes can be presented as a quote.\n\n### A smaller heading\n\n1. First step\n2. Second step\n3. Third step"
+        },
+        {
+          "type": "callout",
+          "style": "warning",
+          "title": "Markdown limitation",
+          "text": "The first version supports a small, safe subset of Markdown rather than raw HTML or a full Markdown library. Use dedicated JSON content blocks for code, warnings and steps."
+        }
+      ],
+      "related": []
+    },
+    {
+      "id": "premium-overview",
+      "type": "faq",
+      "category": "premium",
+      "title": "Where do Premium details belong?",
+      "summary": "Use this section for verified Premium questions and answers.",
+      "tags": ["premium", "account", "access"],
+      "updated": "2026-10-16",
+      "featured": true,
+      "content": [
+        {
+          "type": "markdown",
+          "text": "This is a placeholder FAQ for the **Premium** category. Replace it with your actual Premium policy, supported features, purchase guidance and troubleshooting steps. Avoid promising benefits that are not part of the current app release."
+        },
+        {
+          "type": "callout",
+          "style": "danger",
+          "title": "Before publishing",
+          "text": "Verify any pricing, access, renewal, or entitlement information and keep it up to date."
+        }
+      ],
+      "related": ["premium-troubleshooting"]
+    },
+    {
+      "id": "premium-troubleshooting",
+      "type": "documentation",
+      "category": "premium",
+      "title": "Premium troubleshooting template",
+      "summary": "A suggested structure for a support guide.",
+      "tags": ["premium", "troubleshooting", "support"],
+      "updated": "2026-10-16",
+      "content": [
+        {
+          "type": "steps",
+          "items": [
+            "Describe the problem and the exact message shown.",
+            "List the checks a user can safely perform.",
+            "Explain how to collect relevant diagnostic information without sharing secrets.",
+            "Provide the official support or feedback contact."
+          ]
+        },
+        {
+          "type": "callout",
+          "style": "tip",
+          "title": "Writing suggestion",
+          "text": "Keep each step short. Put risky or irreversible operations in a clearly labelled warning."
+        }
+      ],
+      "related": ["premium-overview"]
+    },
+    {
+      "id": "cleaner-model-json",
+      "type": "documentation",
+      "category": "cleaner-model",
+      "title": "JSON data example",
+      "summary": "Demonstrates a formatted JSON code block with a copy button.",
+      "tags": ["json", "data", "example", "cleaner model"],
+      "updated": "2026-10-16",
+      "featured": true,
+      "content": [
+        {
+          "type": "markdown",
+          "text": "Use a code block when you need to show a data structure. The viewer preserves indentation and provides a one-tap copy action. This payload is generic demonstration data, not a required CleanerModel schema."
+        },
+        {
+          "type": "code",
+          "title": "Example JSON",
+          "language": "json",
+          "copy": true,
+          "code": "{\n  \"name\": \"Example\",\n  \"enabled\": true,\n  \"items\": [\"one\", \"two\"]\n}"
+        },
+        {
+          "type": "callout",
+          "style": "note",
+          "title": "Remember",
+          "text": "Document required fields, optional fields and default values next to the example."
+        }
+      ],
+      "related": ["cleaner-model-java", "getting-started"]
+    },
+    {
+      "id": "cleaner-model-java",
+      "type": "documentation",
+      "category": "cleaner-model",
+      "title": "Java code example",
+      "summary": "A short Java snippet showing the copyable code viewer.",
+      "tags": ["java", "code", "example"],
+      "updated": "2026-10-16",
+      "content": [
+        {
+          "type": "markdown",
+          "text": "Java examples can include a title and language label. The code panel uses a horizontally scrollable area for long lines."
+        },
+        {
+          "type": "code",
+          "title": "ExampleJava.java",
+          "language": "java",
+          "copy": true,
+          "code": "public final class ExampleJava {\n    private ExampleJava() {}\n\n    public static String greet(String name) {\n        return \"Hello, \" + name + \"!\";\n    }\n}"
+        },
+        {
+          "type": "callout",
+          "style": "warning",
+          "title": "Code examples",
+          "text": "Provide the imports, minimum Java version and required dependencies when they are necessary to make an example runnable."
+        }
+      ],
+      "related": ["cleaner-model-json"]
+    },
+    {
+      "id": "cleaner-model-shell",
+      "type": "documentation",
+      "category": "cleaner-model",
+      "title": "Shell command example",
+      "summary": "Displays terminal commands in a copyable panel.",
+      "tags": ["shell", "bash", "terminal", "command"],
+      "updated": "2026-10-16",
+      "content": [
+        {
+          "type": "markdown",
+          "text": "Use a shell code block when a guide includes commands. Explain prerequisites and the working directory, and show expected output when it helps the reader."
+        },
+        {
+          "type": "code",
+          "title": "Safe demonstration command",
+          "language": "bash",
+          "copy": true,
+          "code": "printf '%s\\n' 'Replace this with a documented command'"
+        },
+        {
+          "type": "callout",
+          "style": "danger",
+          "title": "Command safety",
+          "text": "Clearly explain what a command does before sharing commands that need elevated privileges or can modify or delete data."
+        }
+      ],
+      "related": ["cleaner-model-java"]
+    }
+  ],
+  "settings": {
+    "searchEnabled": true,
+    "showUpdatedDate": true,
+    "showRelatedArticles": true,
+    "showFeatured": true
+  }
+}
