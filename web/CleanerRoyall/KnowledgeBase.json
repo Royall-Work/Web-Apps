@@ -36,7 +36,10 @@
       "category": "general",
       "title": "Where should I start?",
       "summary": "A quick guide to finding the information you need.",
-      "tags": ["basics", "getting started"],
+      "tags": [
+        "basics",
+        "getting started"
+      ],
       "updated": "2026-10-16",
       "featured": true,
       "content": [
@@ -50,8 +53,7 @@
           "title": "For this test",
           "text": "These are sample entries to demonstrate the interface. Replace the sample text with your verified documentation before publishing."
         }
-      ],
-      "related": ["faq-search", "cleaner-model-json"]
+      ]
     },
     {
       "id": "faq-search",
@@ -59,7 +61,11 @@
       "category": "general",
       "title": "How does search work?",
       "summary": "Search titles, summaries, tags and text in article content.",
-      "tags": ["search", "filter", "find"],
+      "tags": [
+        "search",
+        "filter",
+        "find"
+      ],
       "updated": "2026-10-16",
       "content": [
         {
@@ -72,8 +78,7 @@
           "title": "Tip",
           "text": "Use **All content** to remove the type filter. Choose *View all* or the bottom **All articles** action to clear every filter."
         }
-      ],
-      "related": ["getting-started"]
+      ]
     },
     {
       "id": "sample-markdown",
@@ -81,7 +86,11 @@
       "category": "general",
       "title": "Supported text formatting",
       "summary": "A small example of the built-in Markdown-like renderer.",
-      "tags": ["markdown", "formatting", "text"],
+      "tags": [
+        "markdown",
+        "formatting",
+        "text"
+      ],
       "updated": "2026-10-16",
       "featured": false,
       "content": [
@@ -95,8 +104,7 @@
           "title": "Markdown limitation",
           "text": "The first version supports a small, safe subset of Markdown rather than raw HTML or a full Markdown library. Use dedicated JSON content blocks for code, warnings and steps."
         }
-      ],
-      "related": []
+      ]
     },
     {
       "id": "premium-overview",
@@ -104,7 +112,11 @@
       "category": "premium",
       "title": "Where do Premium details belong?",
       "summary": "Use this section for verified Premium questions and answers.",
-      "tags": ["premium", "account", "access"],
+      "tags": [
+        "premium",
+        "account",
+        "access"
+      ],
       "updated": "2026-10-16",
       "featured": true,
       "content": [
@@ -118,8 +130,7 @@
           "title": "Before publishing",
           "text": "Verify any pricing, access, renewal, or entitlement information and keep it up to date."
         }
-      ],
-      "related": ["premium-troubleshooting"]
+      ]
     },
     {
       "id": "premium-troubleshooting",
@@ -127,7 +138,11 @@
       "category": "premium",
       "title": "Premium troubleshooting template",
       "summary": "A suggested structure for a support guide.",
-      "tags": ["premium", "troubleshooting", "support"],
+      "tags": [
+        "premium",
+        "troubleshooting",
+        "support"
+      ],
       "updated": "2026-10-16",
       "content": [
         {
@@ -145,8 +160,7 @@
           "title": "Writing suggestion",
           "text": "Keep each step short. Put risky or irreversible operations in a clearly labelled warning."
         }
-      ],
-      "related": ["premium-overview"]
+      ]
     },
     {
       "id": "cleaner-model-json",
@@ -154,7 +168,12 @@
       "category": "cleaner-model",
       "title": "JSON data example",
       "summary": "Demonstrates a formatted JSON code block with a copy button.",
-      "tags": ["json", "data", "example", "cleaner model"],
+      "tags": [
+        "json",
+        "data",
+        "example",
+        "cleaner model"
+      ],
       "updated": "2026-10-16",
       "featured": true,
       "content": [
@@ -175,8 +194,7 @@
           "title": "Remember",
           "text": "Document required fields, optional fields and default values next to the example."
         }
-      ],
-      "related": ["cleaner-model-java", "getting-started"]
+      ]
     },
     {
       "id": "cleaner-model-java",
@@ -184,7 +202,11 @@
       "category": "cleaner-model",
       "title": "Java code example",
       "summary": "A short Java snippet showing the copyable code viewer.",
-      "tags": ["java", "code", "example"],
+      "tags": [
+        "java",
+        "code",
+        "example"
+      ],
       "updated": "2026-10-16",
       "content": [
         {
@@ -204,8 +226,7 @@
           "title": "Code examples",
           "text": "Provide the imports, minimum Java version and required dependencies when they are necessary to make an example runnable."
         }
-      ],
-      "related": ["cleaner-model-json"]
+      ]
     },
     {
       "id": "cleaner-model-shell",
@@ -213,7 +234,12 @@
       "category": "cleaner-model",
       "title": "Shell command example",
       "summary": "Displays terminal commands in a copyable panel.",
-      "tags": ["shell", "bash", "terminal", "command"],
+      "tags": [
+        "shell",
+        "bash",
+        "terminal",
+        "command"
+      ],
       "updated": "2026-10-16",
       "content": [
         {
@@ -233,14 +259,12 @@
           "title": "Command safety",
           "text": "Clearly explain what a command does before sharing commands that need elevated privileges or can modify or delete data."
         }
-      ],
-      "related": ["cleaner-model-java"]
+      ]
     }
   ],
   "settings": {
     "searchEnabled": true,
     "showUpdatedDate": true,
-    "showRelatedArticles": true,
     "showFeatured": true
   }
 }
