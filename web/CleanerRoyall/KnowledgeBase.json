@@ -18,7 +18,6 @@
           "id": "getting-started",
           "title": "Where should I start?",
           "summary": "A quick introduction to finding and using the documentation.",
-          "featured": true,
           "content": "Welcome to **Cleaner Royall Documentation**. Use the search bar to find answers, or choose a category to narrow the list.\n\nStart by reading the description of each cleaning option and enable only the options you understand.\n\n> Tip: Check the selected options before starting a cleaning operation.",
           "updated": "2026-10-17"
         },
@@ -49,7 +48,6 @@
           "id": "premium-overview",
           "title": "What should the Premium article explain?",
           "summary": "A template for verified Premium information.",
-          "featured": true,
           "content": "Use this article to explain the currently supported Premium features, activation process, eligibility, and troubleshooting.\n\nReplace this sample with verified product information before publishing. Avoid adding pricing, renewal, or access promises unless they match the actual app behavior.",
           "updated": "2026-10-17"
         },
@@ -95,7 +93,6 @@
   ],
   "settings": {
     "searchEnabled": true,
-    "showUpdatedDate": true,
-    "showFeatured": true
+    "showUpdatedDate": true
   }
 }
