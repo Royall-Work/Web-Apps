@@ -4,8 +4,7 @@
     "name": "Cleaner Royall",
     "title": "Documentation",
     "description": "Guides, answers and technical references in one place.",
-    "icon": "",
-    "version": "Preview"
+    "icon": "assets/icon.png"
   },
   "categories": [
     {
