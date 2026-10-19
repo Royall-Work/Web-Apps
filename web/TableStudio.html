@@ -6,156 +6,184 @@
 <meta name="theme-color" content="#0f766e">
 <title>Table Studio</title>
 <style>
-:root{--bg:#f3f8f6;--paper:#fff;--ink:#173330;--muted:#6c817e;--line:#dce8e5;--green:#0f766e;--green2:#115e59;--mint:#e5f5f1;--blue:#2563eb;--red:#be123c;--shadow:0 10px 30px #164e3f0c}
+:root{--bg:#f2f7f5;--paper:#fff;--ink:#173330;--muted:#6c817e;--line:#dce8e5;--green:#0f766e;--green2:#115e59;--mint:#e5f5f1;--blue:#2563eb;--red:#be123c}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{font-size:16px;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.4}
-button,input,select,textarea{font:inherit;max-width:100%}button{cursor:pointer;touch-action:manipulation}
-[hidden]{display:none!important}
+button,input,select,textarea{font:inherit;max-width:100%}button{cursor:pointer;touch-action:manipulation}[hidden]{display:none!important}
 .home-header{display:flex;align-items:center;gap:12px;padding:17px 19px;background:#fff;border-bottom:1px solid var(--line)}
-.mark{width:44px;height:44px;display:grid;place-items:center;background:#dff5ef;color:var(--green);border-radius:14px;font-size:26px;font-weight:900;flex:none}
+.mark{width:43px;height:43px;display:grid;place-items:center;background:#dff5ef;color:var(--green);border-radius:14px;font-size:26px;font-weight:900;flex:none}
 .brand h1{font-size:19px;margin:0;line-height:1.2}.brand p{margin:3px 0 0;color:var(--muted);font-size:12px}
-.home-main{max-width:680px;margin:auto;padding:22px 16px 36px}
-.hero{border-radius:25px;padding:26px 22px;background:linear-gradient(140deg,#0f766e,#155e75);color:#fff;box-shadow:0 14px 32px #0f766e21}
-.eyebrow{font-size:10px;font-weight:850;letter-spacing:1.3px;opacity:.8}
-.hero h2{font-size:30px;letter-spacing:-.8px;line-height:1.1;margin:12px 0}
-.hero p{font-size:14px;line-height:1.65;color:#e0f2ef;margin:0}
-.home-card{padding:19px;margin-top:16px;border:1px solid var(--line);border-radius:20px;background:#fff;box-shadow:var(--shadow)}
-.home-card h3{font-size:17px;margin:0 0 6px}.home-card p{font-size:13px;line-height:1.6;color:var(--muted);margin:0}
-.home-btn{width:100%;margin-top:16px;padding:15px 16px;border:0;border-radius:14px;background:var(--green);color:white;font-size:15px;font-weight:800}
-.features{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:13px}
-.feature{background:#fff;border:1px solid var(--line);border-radius:15px;padding:13px;font-size:12px;color:#526e67}
-.feature strong{display:block;font-size:16px;color:var(--green2);margin-bottom:4px}
-.home-foot{text-align:center;margin-top:21px;color:#8a9a96;font-size:11px}
-.editor-top{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:9px;padding:10px 13px;background:#ffffffef;backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
-.back-btn{border:1px solid #cfe8e1;background:var(--mint);color:var(--green2);padding:9px 11px;border-radius:11px;font-weight:800;font-size:12px;white-space:nowrap}
-.editor-mark{width:36px;height:36px;display:grid;place-items:center;border-radius:11px;background:linear-gradient(145deg,#0f766e,#14b8a6);color:#fff;font-size:20px;font-weight:900;flex:none}
-.editor-brand{min-width:0;flex:1}.editor-brand h1{font-size:16px;line-height:1.15;margin:0}.editor-brand p{margin:3px 0 0;color:var(--muted);font-size:10px}
-.status{background:var(--mint);color:var(--green2);font-size:9px;font-weight:900;letter-spacing:.3px;border-radius:99px;padding:6px 7px;white-space:nowrap}
-.editor-main{width:min(100%,950px);margin:auto;padding:15px 12px 34px}
-.intro{margin:3px 2px 16px}.intro .tag{font-size:10px;font-weight:900;letter-spacing:1.2px;text-transform:uppercase;color:var(--green)}.intro h2{font-size:25px;line-height:1.12;letter-spacing:-.65px;margin:6px 0}.intro p{font-size:13px;color:var(--muted);margin:0}
-.panel{background:var(--paper);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:13px}
-.panel-head{padding:13px 14px 11px;border-bottom:1px solid #edf3f1;display:flex;align-items:center;justify-content:space-between;gap:9px}
-.panel-title{font-size:14px;font-weight:850}.panel-sub{font-size:11px;color:var(--muted);margin-top:3px}
-.fields{padding:13px;display:grid;grid-template-columns:1fr;gap:10px}
-.field{min-width:0}.field label{display:block;font-size:10px;font-weight:850;color:#4c6661;margin-bottom:5px;letter-spacing:.3px}
-.field input,.field select,.field textarea{display:block;width:100%;min-height:43px;border:1px solid var(--line);border-radius:11px;padding:10px 11px;background:#fbfdfc;color:var(--ink);outline:none;font-size:14px}
-.field textarea{resize:vertical;min-height:87px;line-height:1.5;white-space:pre-wrap}
+.home-main{max-width:680px;margin:auto;padding:23px 16px 34px}
+.page-kicker{font-size:10px;font-weight:900;letter-spacing:1.3px;color:var(--green);text-transform:uppercase}
+.page-title{font-size:29px;line-height:1.12;letter-spacing:-.7px;margin:7px 0}.page-desc{font-size:13px;line-height:1.55;color:var(--muted);margin:0 0 19px}
+.settings-panel{background:#fff;border:1px solid var(--line);border-radius:21px;overflow:hidden;box-shadow:0 10px 30px #164e3f0c}
+.section-head{padding:16px;border-bottom:1px solid #edf3f1}.section-head strong{font-size:15px;display:block}.section-head small{display:block;font-size:11px;color:var(--muted);margin-top:4px}
+.settings-grid{padding:15px;display:grid;grid-template-columns:1fr;gap:13px}
+.field{min-width:0}.field label{display:block;font-size:10px;font-weight:850;color:#4c6661;margin-bottom:6px;letter-spacing:.4px}
+.field input,.field select,.field textarea{display:block;width:100%;min-height:45px;border:1px solid var(--line);border-radius:12px;padding:11px 12px;background:#fbfdfc;color:var(--ink);outline:none;font-size:14px}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:#51b9aa;box-shadow:0 0 0 3px #0f766e14}
-.controls{padding:11px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.btn{min-height:42px;border:1px solid var(--line);border-radius:11px;padding:9px 10px;background:#fff;color:var(--ink);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:6px;text-align:center}
-.btn:active,.home-btn:active{transform:scale(.985)}.btn.primary{background:var(--green);border-color:var(--green);color:#fff}.btn.soft{background:var(--mint);border-color:#cfe9e2;color:var(--green2)}.btn.blue{background:#eff6ff;border-color:#dbeafe;color:#1d4ed8}.btn.danger{background:#fff1f2;border-color:#ffe0e5;color:var(--red)}.btn.full{grid-column:1/-1}
-.table-heading{padding:13px 14px;display:flex;align-items:center;justify-content:space-between;gap:9px}
-.table-heading .panel-sub{margin-top:3px}.count{font-size:10px;font-weight:850;color:#58736d;background:#f0f5f4;padding:5px 8px;border-radius:99px;white-space:nowrap}
-.table-wrap{width:100%;overflow:auto;overscroll-behavior-x:contain;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:#fff;scrollbar-width:thin;scrollbar-color:#b8d6cf #f2f7f5}
-table{width:100%;min-width:480px;border-collapse:collapse;table-layout:fixed;font-size:12px}
-th,td{border:1px solid #dbe7e3;padding:9px 8px;vertical-align:top;overflow-wrap:anywhere;white-space:pre-wrap;word-break:normal}
-th{background:#eaf7f3;color:#135e55;text-align:left;font-weight:850}
+.check-row{display:flex;align-items:center;gap:10px;padding:12px 13px;border:1px solid var(--line);border-radius:12px;background:#fbfdfc;font-size:13px;font-weight:700}
+.check-row input{width:18px;height:18px;accent-color:var(--green);flex:none}
+.home-actions{padding:0 15px 16px}
+.home-btn{width:100%;padding:15px 16px;border:0;border-radius:14px;background:var(--green);color:#fff;font-size:15px;font-weight:850}
+.home-btn:active,.tool-btn:active{transform:scale(.985)}
+.settings-tip{display:flex;gap:10px;align-items:flex-start;background:#e8f6f2;border:1px solid #d6eee7;border-radius:15px;padding:13px;margin-top:13px;font-size:12px;line-height:1.55;color:#42645c}
+.settings-tip b{color:var(--green2)}
+.home-foot{text-align:center;margin-top:19px;color:#8a9a96;font-size:11px}
+#editorScreen{height:100vh;height:100dvh;width:100%;overflow:hidden;display:flex;flex-direction:column;background:#fff}
+.editor-top{height:57px;flex:none;display:flex;align-items:center;gap:10px;padding:7px 10px;background:#fff;border-bottom:1px solid var(--line);z-index:2}
+.back-btn{border:1px solid #cfe8e1;background:var(--mint);color:var(--green2);padding:9px 11px;border-radius:11px;font-weight:850;font-size:12px;white-space:nowrap}
+.editor-brand{min-width:0;flex:1}.editor-brand strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;line-height:1.2}.editor-brand small{display:block;font-size:10px;color:var(--muted);margin-top:3px}
+.icon-btn{height:38px;width:39px;display:grid;place-items:center;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--green2);font-size:18px;flex:none}
+.editor-body{flex:1;min-height:0;min-width:0;overflow:auto;overscroll-behavior:contain;background:#f5f8f7}
+.table-wrap{min-height:100%;width:100%;overflow:auto;overscroll-behavior:contain;background:#fff;scrollbar-width:thin;scrollbar-color:#b8d6cf #f2f7f5}
+table{width:100%;min-width:520px;border-collapse:collapse;table-layout:fixed;font-size:13px;background:#fff}
+th,td{border:1px solid #dbe7e3;padding:11px 9px;vertical-align:top;overflow-wrap:anywhere;white-space:pre-wrap;word-break:normal}
+th{background:#e6f5f0;color:#135e55;text-align:left;font-weight:850}
 tbody tr:nth-child(even) td{background:#fbfdfc}
-td{min-height:37px;color:#263f3a}
-td[contenteditable=true],th[contenteditable=true]{outline:none;cursor:text;min-width:45px;white-space:pre-wrap}
+td{min-height:45px;color:#263f3a}
+td[contenteditable=true],th[contenteditable=true]{outline:none;cursor:text;min-width:45px;white-space:pre-wrap;user-select:text;-webkit-user-select:text}
 td[contenteditable=true]:focus,th[contenteditable=true]:focus{box-shadow:inset 0 0 0 2px #2aa695;background:#f0fffb}
-th:first-child,td:first-child{width:42px;text-align:center;font-size:11px;color:#6c817e}
-.table-help{font-size:11px;color:var(--muted);padding:10px 13px 12px}.table-help strong{color:var(--green2)}
-.bottom-actions{display:grid;grid-template-columns:1fr;gap:9px;margin-top:14px}.export{min-height:51px;font-size:14px;border-radius:14px}.secondary{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.note{text-align:center;font-size:10px;color:var(--muted);line-height:1.5;margin:15px 12px 0}
-.toast{position:fixed;z-index:40;left:50%;bottom:20px;transform:translate(-50%,15px);opacity:0;pointer-events:none;transition:.18s;background:#173330;color:white;padding:10px 14px;border-radius:12px;font-size:12px;font-weight:750;box-shadow:0 8px 24px #1238;max-width:calc(100vw - 30px);text-align:center}.toast.show{opacity:1;transform:translate(-50%,0)}
-.backdrop{position:fixed;inset:0;background:#0b2825a8;z-index:50;display:none;align-items:flex-end;justify-content:center;padding:12px}.backdrop.open{display:flex}
-.dialog{background:#fff;width:min(100%,440px);padding:19px;border-radius:19px;box-shadow:0 20px 70px #061d1b55}.dialog h3{font-size:18px;margin:0 0 7px}.dialog p{font-size:13px;color:var(--muted);margin:0 0 16px}.dialog-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.print-title,.print-subtitle,.print-date{display:none}
-@media(min-width:620px){.home-main{padding:28px 20px 50px}.hero{padding:31px 29px}.hero h2{font-size:36px}.editor-main{padding:24px 20px 50px}.intro h2{font-size:30px}.fields{grid-template-columns:1.5fr 1fr 1fr}.controls{grid-template-columns:repeat(4,minmax(0,1fr))}.bottom-actions{grid-template-columns:1.4fr 1fr}.table-wrap{overflow:auto}table{min-width:0;font-size:13px}th,td{padding:10px}.status{font-size:10px}}
+th:first-child,td:first-child{width:44px;text-align:center;font-size:11px;color:#6c817e}
+.editor-dock{flex:none;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;padding:7px 7px calc(7px + env(safe-area-inset-bottom));background:#fff;border-top:1px solid var(--line);z-index:3}
+.tool-btn{min-width:0;min-height:49px;border:1px solid var(--line);border-radius:12px;background:#f8fbfa;color:#315650;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:18px;line-height:1}
+.tool-btn span{font-size:9px;font-weight:850;white-space:nowrap}
+.tool-btn.primary{background:var(--green);color:#fff;border-color:var(--green)}
+.print-title,.print-date{display:none}
+.toast{position:fixed;z-index:80;left:50%;bottom:85px;transform:translate(-50%,12px);opacity:0;pointer-events:none;transition:.18s;background:#173330;color:white;padding:10px 14px;border-radius:12px;font-size:12px;font-weight:750;box-shadow:0 8px 24px #1238;max-width:calc(100vw - 30px);text-align:center}.toast.show{opacity:1;transform:translate(-50%,0)}
+.sheet-backdrop{position:fixed;inset:0;background:#0925218c;z-index:50;display:none;align-items:flex-end;justify-content:center;padding:10px 10px calc(10px + env(safe-area-inset-bottom))}
+.sheet-backdrop.open{display:flex}
+.sheet{background:#fff;width:min(100%,500px);max-height:86%;overflow:auto;border-radius:20px;padding:17px;box-shadow:0 20px 70px #061d1b55}
+.sheet-handle{width:37px;height:4px;background:#d5e3df;border-radius:9px;margin:-5px auto 14px}
+.sheet h2{font-size:18px;margin:0 0 5px}.sheet p{font-size:12px;color:var(--muted);margin:0 0 14px;line-height:1.5}
+.sheet textarea{width:100%;min-height:125px;resize:vertical;border:1px solid var(--line);border-radius:13px;padding:12px;outline:none;font-size:16px;line-height:1.5;color:var(--ink);background:#fbfdfc;white-space:pre-wrap}
+.sheet textarea:focus{border-color:#51b9aa;box-shadow:0 0 0 3px #0f766e14}
+.sheet-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.sheet-menu{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.action-btn{min-height:43px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);font-size:12px;font-weight:800;padding:10px}
+.action-btn.soft{background:var(--mint);border-color:#cfe9e2;color:var(--green2)}.action-btn.danger{background:#fff1f2;border-color:#ffe0e5;color:var(--red)}.action-btn.primary{background:var(--green);border-color:var(--green);color:white}
+#printTitle{font-size:17pt;font-weight:800;text-align:center;margin:0 0 4mm;line-height:1.2}
+@media(min-width:620px){
+ .home-main{padding:32px 22px 50px}.page-title{font-size:34px}.settings-grid{grid-template-columns:1.4fr 1fr 1fr}.check-row{grid-column:1/-1}
+ .editor-top{padding-left:16px;padding-right:16px}.editor-dock{padding-left:max(10px,calc((100% - 900px)/2));padding-right:max(10px,calc((100% - 900px)/2))}
+ table{min-width:0;font-size:14px}th,td{padding:12px}
+}
 @media print{
  @page{size:A4 portrait;margin:14mm}
- html,body{width:auto!important;height:auto!important;margin:0!important;padding:0!important;background:#fff!important;color:#111!important;font-size:10pt!important;overflow:visible!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
- #screen-home,.editor-top,.intro,.setup-panel,.tools-panel,.table-heading,.table-help,.bottom-actions,.note,.toast,.backdrop{display:none!important}
- #screen-editor{display:block!important}
- .editor-main{width:100%!important;max-width:none!important;padding:0!important;margin:0!important}
- .panel,.table-panel{border:0!important;border-radius:0!important;box-shadow:none!important;margin:0!important;overflow:visible!important}
- .table-wrap{overflow:visible!important;border:0!important}
+ html,body{width:auto!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;background:#fff!important;color:#111!important;overflow:visible!important;font-size:10pt!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ #homeScreen,.editor-top,.editor-dock,.toast,.sheet-backdrop{display:none!important}
+ #editorScreen{display:block!important;height:auto!important;width:auto!important;overflow:visible!important;background:#fff!important}
+ .editor-body{display:block!important;overflow:visible!important;min-height:0!important}
+ .table-wrap{display:block!important;min-height:0!important;width:auto!important;overflow:visible!important}
+ #printTitle{display:block!important}
+ .print-date{display:block!important;text-align:right;font-size:8pt;color:#52645f;margin:0 0 3mm}
  table{width:100%!important;min-width:0!important;table-layout:fixed!important;border-collapse:collapse!important;font-size:9pt!important;break-inside:auto}
  thead{display:table-header-group}tfoot{display:table-footer-group}tr{break-inside:avoid;page-break-inside:avoid}
  th,td{border:1px solid #869b96!important;padding:6px 5px!important;overflow-wrap:anywhere!important;word-break:normal!important;color:#152522!important}
  th{background:#dff2ec!important;color:#0d5148!important}tbody tr:nth-child(even) td{background:#f7fbfa!important}th:first-child,td:first-child{width:9mm!important}
- .print-title{display:block!important;font-size:16pt;font-weight:800;text-align:center;margin:0 0 4mm;line-height:1.2}
- .print-subtitle{display:block!important;font-size:9pt;text-align:center;color:#52645f;margin:0 0 7mm}
- .print-date{display:block!important;text-align:right;font-size:8pt;color:#52645f;margin:0 0 3mm}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
-<section id="screen-home">
- <header class="home-header"><div class="mark">▦</div><div class="brand"><h1>Table Studio</h1><p>Create tables · Export A4 PDF</p></div></header>
+<section id="homeScreen">
+ <header class="home-header"><div class="mark">▦</div><div class="brand"><h1>Table Studio</h1><p>Settings · Table editor · A4 PDF</p></div></header>
  <main class="home-main">
-  <section class="hero"><div class="eyebrow">YOUR SIMPLE TABLE WORKSPACE</div><h2>Make a table.<br>Print it beautifully.</h2><p>Build tables for lists, records, schedules or notes, then save them as an A4 PDF ready to print.</p></section>
-  <section class="home-card"><h3>Table Editor</h3><p>Create and edit your table on a separate screen. Zoom in while editing, add rows and columns, or put several lines inside one cell.</p><button class="home-btn" type="button" onclick="showEditor()">Open Editor　→</button></section>
-  <div class="features"><div class="feature"><strong>▤ A4 PDF</strong>Portrait or landscape print</div><div class="feature"><strong>↵ Multi-line</strong>Multiple items in one cell</div><div class="feature"><strong>＋ Flexible</strong>Add rows and columns</div><div class="feature"><strong>⌕ Zoomable</strong>Zoom inside the editor</div></div>
-  <footer class="home-foot">Table Studio · Works in your browser</footer>
+  <div class="page-kicker">DOCUMENT SETUP</div>
+  <h2 class="page-title">Set up your table.</h2>
+  <p class="page-desc">Choose the table title and print settings here. Your table opens separately in a full-screen editor.</p>
+  <section class="settings-panel">
+   <div class="section-head"><strong>Table settings</strong><small>These settings are used for your table and A4 printout.</small></div>
+   <div class="settings-grid">
+    <div class="field"><label for="docTitle">TABLE TITLE</label><input id="docTitle" value="My Table" maxlength="120" placeholder="Enter a title"></div>
+    <div class="field"><label for="orientation">PAPER ORIENTATION</label><select id="orientation"><option value="portrait">A4 Portrait</option><option value="landscape">A4 Landscape</option></select></div>
+    <div class="field"><label for="fontSize">PRINT TEXT SIZE</label><select id="fontSize"><option value="8">Small</option><option value="9" selected>Normal</option><option value="11">Large</option><option value="12">Extra large</option></select></div>
+    <label class="check-row"><input id="headerToggle" type="checkbox" checked><span>Use the first row as the table header</span></label>
+   </div>
+   <div class="home-actions"><button class="home-btn" id="openEditor" type="button">Open Full-Screen Editor　→</button></div>
+  </section>
+  <div class="settings-tip"><span style="font-size:20px">↵</span><div><b>Multiple lines in one cell</b><br>In the editor, select a cell and tap “Lines” to enter two or more items in a single box.</div></div>
+  <footer class="home-foot">Your table stays in this page while you switch between settings and editor.</footer>
  </main>
 </section>
-<section id="screen-editor" hidden>
- <header class="editor-top"><button class="back-btn" type="button" onclick="showHome()">← Home</button><div class="editor-mark">▦</div><div class="editor-brand"><h1>Table Studio</h1><p>Build a table · Print to A4 PDF</p></div><span class="status">A4 READY</span></header>
- <main class="editor-main">
-  <section class="intro"><div class="tag">Simple table maker</div><h2>Your table, print-ready.</h2><p>Create and edit a table on your phone, then save it as an A4 PDF.</p></section>
-  <section class="panel setup-panel">
-   <div class="panel-head"><div><div class="panel-title">Page details</div><div class="panel-sub">These details appear on the printed page.</div></div></div>
-   <div class="fields"><div class="field"><label for="docTitle">TABLE TITLE</label><input id="docTitle" value="My Table" maxlength="120" placeholder="Enter a title"></div><div class="field"><label for="orientation">PAPER ORIENTATION</label><select id="orientation"><option value="portrait">A4 Portrait</option><option value="landscape">A4 Landscape</option></select></div><div class="field"><label for="fontSize">PRINT TEXT SIZE</label><select id="fontSize"><option value="8">Small</option><option value="9" selected>Normal</option><option value="11">Large</option><option value="12">Extra large</option></select></div></div>
-  </section>
-  <section class="panel tools-panel">
-   <div class="panel-head"><div><div class="panel-title">Table controls</div><div class="panel-sub">Tap a cell to select it. Pinch to zoom in this screen.</div></div></div>
-   <div class="controls"><button class="btn soft" id="addRow">＋ Add row</button><button class="btn soft" id="addCol">＋ Add column</button><button class="btn" id="delRow">− Remove last row</button><button class="btn blue" id="delCol">− Remove last column</button><button class="btn" id="headerToggle">▤ Toggle header</button><button class="btn" id="clearTable">⌫ Clear cell text</button><button class="btn danger full" id="resetTable">↺ Reset table</button></div>
-  </section>
-  <section class="panel tools-panel">
-   <div class="panel-head"><div><div class="panel-title">Multi-line cell input</div><div class="panel-sub">Select a cell, then enter one item per line.</div></div></div>
-   <div style="padding:12px 13px 0"><div class="field"><label for="lineBox">LINE ITEMS</label><textarea id="lineBox" rows="3" placeholder="Item one&#10;Item two"></textarea></div><button class="btn primary full" id="applyLineBox" style="margin-top:9px">Insert lines into selected cell</button></div>
-  </section>
-  <section class="panel table-panel">
-   <div class="table-heading"><div><div class="panel-title" id="visibleTitle">My Table</div><div class="panel-sub">Editable grid</div></div><span class="count" id="tableCount">4 × 4</span></div>
-   <div class="print-title" id="printTitle">My Table</div><div class="print-subtitle" id="printSubtitle"></div><div class="print-date" id="printDate"></div>
-   <div class="table-wrap"><table id="dataTable" aria-label="Editable table"></table></div>
-   <div class="table-help">✎ <strong>Tip:</strong> Tap a cell to type. Use the multi-line input box for several items in one cell.</div>
-  </section>
-  <div class="bottom-actions"><button class="btn primary export" id="exportPdf">▣　Print / Save as A4 PDF</button><div class="secondary"><button class="btn soft" id="downloadData">↓　Save table data</button><button class="btn" id="importData">↑　Import table data</button><input id="fileInput" type="file" accept="application/json,.json" hidden></div></div>
-  <p class="note">For PDF, choose “Save as PDF” in the print screen. Tables can span multiple A4 pages.</p>
- </main>
+<section id="editorScreen" hidden>
+ <header class="editor-top">
+  <button class="back-btn" id="backHome" type="button">← Settings</button>
+  <div class="editor-brand"><strong id="editorTitle">My Table</strong><small>Tap any cell to edit · Pinch to zoom</small></div>
+  <button class="icon-btn" id="printTop" type="button" aria-label="Print table">▣</button>
+ </header>
+ <div class="editor-body" id="editorBody">
+  <div class="table-wrap" id="tableWrap">
+   <div id="printTitle">My Table</div><div class="print-date" id="printDate"></div>
+   <table id="dataTable" aria-label="Editable table"></table>
+  </div>
+ </div>
+ <nav class="editor-dock" aria-label="Table editing tools">
+  <button class="tool-btn" id="addRow" type="button">＋<span>Add row</span></button>
+  <button class="tool-btn" id="addCol" type="button">▥<span>Add column</span></button>
+  <button class="tool-btn" id="openLines" type="button">↵<span>Lines</span></button>
+  <button class="tool-btn primary" id="exportPdf" type="button">▣<span>Print PDF</span></button>
+  <button class="tool-btn" id="openMore" type="button">•••<span>More</span></button>
+ </nav>
 </section>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
-<div class="backdrop" id="backdrop" role="dialog" aria-modal="true" aria-labelledby="dialogTitle"><div class="dialog"><h3 id="dialogTitle">Reset table?</h3><p id="dialogText">This will replace the current table with a fresh one.</p><div class="dialog-actions"><button class="btn" id="dialogCancel">Cancel</button><button class="btn danger" id="dialogConfirm">Confirm</button></div></div></div>
+<div class="sheet-backdrop" id="sheetBackdrop">
+ <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="sheet-handle"></div><h2 id="sheetTitle">Cell items</h2><p id="sheetDescription">Enter each item on a separate line.</p>
+  <div id="linesView"><textarea id="lineBox" placeholder="Item one&#10;Item two" rows="4"></textarea><div class="sheet-actions"><button class="action-btn" id="closeSheet" type="button">Cancel</button><button class="action-btn primary" id="applyLines" type="button">Insert into cell</button></div></div>
+  <div class="sheet-menu" id="moreView" hidden>
+   <button class="action-btn soft" id="removeRow" type="button">− Remove last row</button><button class="action-btn soft" id="removeCol" type="button">− Remove last column</button>
+   <button class="action-btn" id="toggleHeader" type="button">Toggle header row</button><button class="action-btn" id="clearText" type="button">Clear cell text</button>
+   <button class="action-btn" id="saveData" type="button">↓ Save table data</button><button class="action-btn" id="importData" type="button">↑ Import table data</button>
+   <button class="action-btn danger" id="resetTable" type="button">Reset table</button><button class="action-btn" id="closeMore" type="button">Close</button>
+   <input id="fileInput" type="file" accept="application/json,.json" hidden>
+  </div>
+ </section>
+</div>
 <script>
 (function(){
- const $=id=>document.getElementById(id), table=$('dataTable');
- let rows=4,cols=4,hasHeader=true,values=[],pendingAction=null,toastTimer=null,selectedCell=null;
- function seed(){values=[];for(let r=0;r<rows;r++){values[r]=[];for(let c=0;c<cols;c++)values[r][c]=r===0&&hasHeader?(c===0?'No.':'Column '+(c+1)):(c===0?String(r):'');}}
+ const $=id=>document.getElementById(id),table=$('dataTable');
+ let rows=4,cols=4,hasHeader=true,values=[],selectedCell=null,toastTimer=null,sheetMode='lines';
+ function seed(){values=[];for(let r=0;r<rows;r++){values[r]=[];for(let c=0;c<cols;c++)values[r][c]=r===0&&c===0?'No.':r===0&&hasHeader?'Column '+(c+1):c===0?String(r):'';}}
  function fitValues(){while(values.length<rows)values.push(Array.from({length:cols},(_,c)=>c===0?String(values.length):''));values=values.slice(0,rows);values.forEach((row,r)=>{while(row.length<cols)row.push(r===0&&hasHeader?'Column '+(row.length+1):'');row.length=cols;});}
- function render(){table.innerHTML='';fitValues();if(hasHeader){const thead=document.createElement('thead'),tr=document.createElement('tr');for(let c=0;c<cols;c++)tr.appendChild(makeCell(values[0][c],true,0,c));thead.appendChild(tr);table.appendChild(thead);}const tbody=document.createElement('tbody');for(let r=hasHeader?1:0;r<rows;r++){const tr=document.createElement('tr');for(let c=0;c<cols;c++)tr.appendChild(makeCell(values[r][c],false,r,c));tbody.appendChild(tr);}table.appendChild(tbody);selectedCell=null;updateMeta();}
- function makeCell(value,isHead,r,c){const el=document.createElement(isHead?'th':'td');el.contentEditable='true';el.spellcheck=false;el.textContent=value==null?'':value;el.dataset.r=r;el.dataset.c=c;el.addEventListener('focus',()=>selectCell(el));el.addEventListener('click',()=>selectCell(el));el.addEventListener('input',()=>{values[r][c]=el.innerText;updateMeta();});el.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();const all=[...table.querySelectorAll('[contenteditable=true]')],i=all.indexOf(el);if(all[i+1])all[i+1].focus();}});return el;}
+ function syncSettings(){const t=$('docTitle').value.trim()||'My Table';$('editorTitle').textContent=t;$('printTitle').textContent=t;$('printDate').textContent=new Date().toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'});document.title=t+' — Table Studio';}
+ function render(){table.innerHTML='';fitValues();if(hasHeader){const thead=document.createElement('thead'),tr=document.createElement('tr');for(let c=0;c<cols;c++)tr.appendChild(makeCell(values[0][c],true,0,c));thead.appendChild(tr);table.appendChild(thead);}const tbody=document.createElement('tbody');for(let r=hasHeader?1:0;r<rows;r++){const tr=document.createElement('tr');for(let c=0;c<cols;c++)tr.appendChild(makeCell(values[r][c],false,r,c));tbody.appendChild(tr);}table.appendChild(tbody);selectedCell=null;syncSettings();}
+ function makeCell(value,isHead,r,c){const el=document.createElement(isHead?'th':'td');el.contentEditable='true';el.spellcheck=false;el.textContent=value==null?'':value;el.dataset.r=r;el.dataset.c=c;el.addEventListener('focus',()=>selectCell(el));el.addEventListener('click',()=>selectCell(el));el.addEventListener('input',()=>{values[r][c]=el.innerText;});return el;}
  function selectCell(el){selectedCell=el;$('lineBox').value=el.innerText||el.textContent||'';}
- function updateMeta(){const title=$('docTitle').value.trim()||'My Table';$('visibleTitle').textContent=title;$('printTitle').textContent=title;$('printDate').textContent=new Date().toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'});$('tableCount').textContent=rows+' × '+cols;document.title=( $('screen-editor').hidden ? 'Table Studio' : title+' — Table Studio');}
- function toast(msg){const el=$('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2200);}
+ function toast(msg){const el=$('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2000);}
+ function openSheet(mode){sheetMode=mode;$('sheetBackdrop').classList.add('open');$('linesView').hidden=mode!=='lines';$('moreView').hidden=mode!=='more';$('sheetTitle').textContent=mode==='lines'?'Enter multiple lines':'Table tools';$('sheetDescription').textContent=mode==='lines'?'Each line will be placed inside the selected cell.':'Manage rows, columns and table data.';if(mode==='lines'){$('lineBox').value=selectedCell?(selectedCell.innerText||selectedCell.textContent||''):'';setTimeout(()=>$('lineBox').focus(),150);}}
+ function closeSheet(){$('sheetBackdrop').classList.remove('open');}
  function addRow(){if(rows>=100){toast('Maximum 100 rows');return;}values.push(Array.from({length:cols},(_,c)=>c===0?String(rows):''));rows++;render();toast('Row added');}
  function addCol(){if(cols>=20){toast('Maximum 20 columns');return;}cols++;values.forEach((row,r)=>row.push(hasHeader&&r===0?'Column '+cols:''));render();toast('Column added');}
  function removeRow(){if(rows<=1){toast('Keep at least one row');return;}values.pop();rows--;render();toast('Last row removed');}
  function removeCol(){if(cols<=1){toast('Keep at least one column');return;}values.forEach(row=>row.pop());cols--;render();toast('Last column removed');}
- function showDialog(title,message,action,label){$('dialogTitle').textContent=title;$('dialogText').textContent=message;$('dialogConfirm').textContent=label||'Confirm';pendingAction=action;$('backdrop').classList.add('open');}
- function closeDialog(){$('backdrop').classList.remove('open');pendingAction=null;}
- $('applyLineBox').addEventListener('click',()=>{if(!selectedCell){toast('Select a table cell first');return;}const r=+selectedCell.dataset.r,c=+selectedCell.dataset.c,text=$('lineBox').value;if(!text.trim()){toast('Enter one or more lines');return;}values[r][c]=text;selectedCell.textContent=text;toast('Multi-line text inserted');});
- $('addRow').addEventListener('click',addRow);$('addCol').addEventListener('click',addCol);$('delRow').addEventListener('click',removeRow);$('delCol').addEventListener('click',removeCol);
- $('headerToggle').addEventListener('click',()=>{hasHeader=!hasHeader;render();toast(hasHeader?'Header enabled':'Header disabled');});
- $('clearTable').addEventListener('click',()=>showDialog('Clear table text?','All cell text will be removed. The table size will stay the same.',()=>{values=Array.from({length:rows},()=>Array(cols).fill(''));if(hasHeader)values[0]=Array.from({length:cols},(_,c)=>'Column '+(c+1));render();toast('Cell text cleared');},'Clear text'));
- $('resetTable').addEventListener('click',()=>showDialog('Reset table?','This will replace the current table with a blank 4 × 4 table.',()=>{rows=4;cols=4;hasHeader=true;seed();render();toast('Table reset');},'Reset table'));
- $('dialogCancel').addEventListener('click',closeDialog);$('dialogConfirm').addEventListener('click',()=>{const action=pendingAction;closeDialog();if(action)action();});$('backdrop').addEventListener('click',e=>{if(e.target===$('backdrop'))closeDialog();});
- $('docTitle').addEventListener('input',updateMeta);$('orientation').addEventListener('change',()=>toast('A4 '+$('orientation').value+' selected'));$('fontSize').addEventListener('change',()=>toast('Print text size updated'));
- $('exportPdf').addEventListener('click',()=>{const orientation=$('orientation').value,fontSize=$('fontSize').value;let style=$('printDynamic');if(!style){style=document.createElement('style');style.id='printDynamic';document.head.appendChild(style);}style.textContent='@media print{@page{size:A4 '+orientation+';margin:14mm}table{font-size:'+fontSize+'pt!important}}';updateMeta();window.print();});
- $('downloadData').addEventListener('click',()=>{const data={title:$('docTitle').value,orientation:$('orientation').value,fontSize:$('fontSize').value,hasHeader,rows,cols,values};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=(($('docTitle').value.trim()||'table').replace(/[^\w -]/g,'').trim().replace(/\s+/g,'-')||'table')+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),500);toast('Table data saved');});
+ function exportData(){const data={title:$('docTitle').value,orientation:$('orientation').value,fontSize:$('fontSize').value,hasHeader,rows,cols,values};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=(($('docTitle').value.trim()||'table').replace(/[^\w -]/g,'').trim().replace(/\s+/g,'-')||'table')+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),500);toast('Table data saved');}
+ function resizeTable(newRows,newCols){const next=[];for(let r=0;r<newRows;r++){next[r]=[];for(let c=0;c<newCols;c++){next[r][c]=values[r]&&values[r][c]!=null?values[r][c]:(hasHeader&&r===0?(c===0?'No.':'Column '+(c+1)):c===0?String(r):'');}}rows=newRows;cols=newCols;values=next;}
+ function setScreen(editor,push){const home=$('homeScreen'),edit=$('editorScreen');home.hidden=editor;edit.hidden=!editor;document.body.style.overflow=editor?'hidden':'';$('viewportMeta').content=editor?'width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes,viewport-fit=cover':'width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover';if(editor){hasHeader=$('headerToggle').checked;render();syncSettings();}else{$('headerToggle').checked=hasHeader;}if(push)history.pushState({screen:editor?'editor':'home'},'',editor?'#editor':'#home');window.scrollTo(0,0);}
+ $('openEditor').addEventListener('click',()=>setScreen(true,true));
+ $('backHome').addEventListener('click',()=>{if(location.hash==='#editor'&&history.length>1)history.back();else setScreen(false,false);});
+ window.addEventListener('popstate',()=>setScreen(location.hash==='#editor',false));
+ $('docTitle').addEventListener('input',syncSettings);
+ $('headerToggle').addEventListener('change',()=>{hasHeader=$('headerToggle').checked;});
+ $('addRow').addEventListener('click',addRow);$('addCol').addEventListener('click',addCol);
+ $('openLines').addEventListener('click',()=>{if(!selectedCell){toast('Select a cell first');return;}openSheet('lines');});
+ $('applyLines').addEventListener('click',()=>{if(!selectedCell){toast('Select a cell first');return;}const text=$('lineBox').value;if(!text.trim()){toast('Enter one or more lines');return;}const r=+selectedCell.dataset.r,c=+selectedCell.dataset.c;values[r][c]=text;selectedCell.textContent=text;closeSheet();toast('Lines inserted');});
+ $('closeSheet').addEventListener('click',closeSheet);$('closeMore').addEventListener('click',closeSheet);$('openMore').addEventListener('click',()=>openSheet('more'));
+ $('sheetBackdrop').addEventListener('click',e=>{if(e.target===$('sheetBackdrop'))closeSheet();});
+ $('removeRow').addEventListener('click',()=>{closeSheet();removeRow();});$('removeCol').addEventListener('click',()=>{closeSheet();removeCol();});
+ $('toggleHeader').addEventListener('click',()=>{hasHeader=!hasHeader;$('headerToggle').checked=hasHeader;render();closeSheet();toast(hasHeader?'Header enabled':'Header disabled');});
+ $('clearText').addEventListener('click',()=>{values=Array.from({length:rows},()=>Array(cols).fill(''));if(hasHeader)values[0]=Array.from({length:cols},(_,c)=>c===0?'No.':'Column '+(c+1));render();closeSheet();toast('Cell text cleared');});
+ $('resetTable').addEventListener('click',()=>{if(confirm('Reset the table to a blank 4 × 4 table?')){rows=4;cols=4;hasHeader=$('headerToggle').checked;seed();render();closeSheet();toast('Table reset');}});
+ $('saveData').addEventListener('click',()=>{closeSheet();exportData();});
  $('importData').addEventListener('click',()=>$('fileInput').click());
- $('fileInput').addEventListener('change',async e=>{const file=e.target.files&&e.target.files[0];if(!file)return;try{const obj=JSON.parse(await file.text());if(!Array.isArray(obj.values)||!Number.isInteger(obj.rows)||!Number.isInteger(obj.cols)||obj.rows<1||obj.rows>100||obj.cols<1||obj.cols>20)throw Error();rows=obj.rows;cols=obj.cols;hasHeader=!!obj.hasHeader;values=obj.values.map(row=>Array.isArray(row)?row.map(x=>String(x??'')):[]);$('docTitle').value=String(obj.title||'My Table');$('orientation').value=obj.orientation==='landscape'?'landscape':'portrait';$('fontSize').value=['8','9','11','12'].includes(String(obj.fontSize))?String(obj.fontSize):'9';render();toast('Table imported');}catch(err){toast('Invalid table data file');}e.target.value='';});
- window.addEventListener('beforeprint',()=>{table.querySelectorAll('[contenteditable=true]').forEach(el=>{const r=+el.dataset.r,c=+el.dataset.c;if(values[r])values[r][c]=el.innerText;});});
+ $('fileInput').addEventListener('change',async e=>{const file=e.target.files&&e.target.files[0];if(!file)return;try{const obj=JSON.parse(await file.text());if(!Array.isArray(obj.values)||!Number.isInteger(obj.rows)||!Number.isInteger(obj.cols)||obj.rows<1||obj.rows>100||obj.cols<1||obj.cols>20)throw Error();rows=obj.rows;cols=obj.cols;hasHeader=!!obj.hasHeader;values=obj.values.map(row=>Array.isArray(row)?row.map(x=>String(x??'')):[]);$('docTitle').value=String(obj.title||'My Table');$('orientation').value=obj.orientation==='landscape'?'landscape':'portrait';$('fontSize').value=['8','9','11','12'].includes(String(obj.fontSize))?String(obj.fontSize):'9';$('headerToggle').checked=hasHeader;render();closeSheet();toast('Table imported');}catch(err){toast('Invalid table data file');}e.target.value='';});
+ function printTable(){const orientation=$('orientation').value,fontSize=$('fontSize').value;let style=$('printDynamic');if(!style){style=document.createElement('style');style.id='printDynamic';document.head.appendChild(style);}style.textContent='@media print{@page{size:A4 '+orientation+';margin:14mm}table{font-size:'+fontSize+'pt!important}}';syncSettings();window.print();}
+ $('exportPdf').addEventListener('click',printTable);$('printTop').addEventListener('click',printTable);
+ window.addEventListener('beforeprint',()=>{table.querySelectorAll('[contenteditable=true]').forEach(el=>{const r=+el.dataset.r,c=+el.dataset.c;if(values[r])values[r][c]=el.innerText;});syncSettings();});
  seed();render();
+ if(location.hash==='#editor')setScreen(true,false);
 })();
-function setScreen(editor,push){const home=document.getElementById('screen-home'),edit=document.getElementById('screen-editor');home.hidden=editor;edit.hidden=!editor;document.getElementById('viewportMeta').content=editor?'width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes,viewport-fit=cover':'width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover';document.title=editor?(document.getElementById('docTitle').value.trim()||'My Table')+' — Table Studio':'Table Studio';if(push){history.pushState({screen:editor?'editor':'home'},'',editor?'#editor':'#home');}window.scrollTo(0,0);}
-function showEditor(){setScreen(true,true)}
-function showHome(){if(location.hash==='#editor'&&history.length>1){history.back();return}setScreen(false,false);if(location.hash)setTimeout(()=>history.replaceState({screen:'home'},'',''+location.pathname+location.search),0)}
-window.addEventListener('popstate',()=>setScreen(location.hash==='#editor',false));
 </script>
 </body>
 </html>
