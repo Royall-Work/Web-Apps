@@ -186,6 +186,7 @@ th:first-child,td:first-child{width:44px;text-align:center;font-size:11px;color:
   pdfLibraryPromise=new Promise((resolve,reject)=>{
    const script=document.createElement('script');
    script.src='https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+   script.integrity='sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==';
    script.crossOrigin='anonymous';
    script.referrerPolicy='no-referrer';
    script.onload=()=>typeof window.html2pdf==='function'?resolve():reject(new Error('PDF library unavailable'));
@@ -201,11 +202,13 @@ th:first-child,td:first-child{width:44px;text-align:center;font-size:11px;color:
  }
  async function shareGeneratedPdf(){
   if(!lastPdfBlob){toast('Create a PDF first');return;}
+  if(typeof File!=='function'||typeof navigator.share!=='function'||typeof navigator.canShare!=='function'){downloadBlob(lastPdfBlob,lastPdfName);closeSheet();toast('File sharing is not supported here. PDF downloaded.');return;}
   const file=new File([lastPdfBlob],lastPdfName,{type:'application/pdf'});
-  if(typeof navigator.share==='function'&&typeof navigator.canShare==='function'&&navigator.canShare({files:[file]})){
-   try{await navigator.share({files:[file],title:$('docTitle').value.trim()||'Table PDF',text:'PDF table'});closeSheet();toast('Share sheet opened');}
-   catch(err){if(err&&err.name==='AbortError')return;downloadBlob(lastPdfBlob,lastPdfName);closeSheet();toast('Could not share. PDF downloaded instead.');}
-  }else{downloadBlob(lastPdfBlob,lastPdfName);closeSheet();toast('File sharing is not supported here. PDF downloaded.');}
+  try{
+   if(!navigator.canShare({files:[file]})){downloadBlob(lastPdfBlob,lastPdfName);closeSheet();toast('File sharing is not supported here. PDF downloaded.');return;}
+   await navigator.share({files:[file],title:$('docTitle').value.trim()||'Table PDF',text:'PDF table'});
+   closeSheet();toast('Share sheet opened');
+  }catch(err){if(err&&err.name==='AbortError')return;downloadBlob(lastPdfBlob,lastPdfName);closeSheet();toast('Could not share. PDF downloaded instead.');}
  }
  async function printTable(){
   const printButton=$('exportPdf'),topButton=$('printTop'),oldButton=printButton.innerHTML;
