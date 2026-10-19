@@ -231,7 +231,7 @@ th:first-child,td:first-child{width:44px;text-align:center;font-size:11px;color:
  function buildPdfSource(pageWidth,fontSize){
   const root=document.createElement('div');
   root.id='tablePdfSource';
-  root.style.cssText='position:absolute;left:-10000px;top:0;width:'+pageWidth+'mm;max-width:none;min-width:0;height:auto;box-sizing:border-box;overflow:visible;background:#fff;color:#152522;padding:0;margin:0;font-family:Arial,Helvetica,sans-serif;z-index:-1;';
+  root.style.cssText='position:fixed;left:0;top:0;width:'+pageWidth+'mm;max-width:none;min-width:0;height:auto;box-sizing:border-box;overflow:visible;background:#fff;color:#152522;padding:0;margin:0;font-family:Arial,Helvetica,sans-serif;z-index:99999;opacity:.01;pointer-events:none;';
   const title=document.createElement('div');
   title.textContent=$('docTitle').value.trim()||'My Table';
   title.style.cssText='display:block;font-size:17pt;font-weight:800;text-align:center;line-height:1.2;margin:0 0 4mm;color:#173330;white-space:normal;overflow-wrap:anywhere;';
@@ -270,7 +270,7 @@ th:first-child,td:first-child{width:44px;text-align:center;font-size:11px;color:
     margin:[10,10,10,10],
     image:{type:'jpeg',quality:0.98},
     html2canvas:{scale:2,useCORS:true,logging:false,backgroundColor:'#ffffff',scrollX:0,scrollY:0,windowWidth:Math.max(document.documentElement.clientWidth,Math.ceil(pageWidth*96/25.4)),onclone:function(clonedDoc){
-      const source=clonedDoc.getElementById('tablePdfSource');if(source)source.style.cssText='position:static;left:0;top:0;width:'+pageWidth+'mm;max-width:none;min-width:0;height:auto;overflow:visible;background:#fff;color:#152522;padding:0;margin:0;font-family:Arial,Helvetica,sans-serif;box-sizing:border-box;';
+      const source=clonedDoc.getElementById('tablePdfSource');if(source)source.style.cssText='position:static;left:0;top:0;width:'+pageWidth+'mm;max-width:none;min-width:0;height:auto;overflow:visible;background:#fff;color:#152522;padding:0;margin:0;font-family:Arial,Helvetica,sans-serif;box-sizing:border-box;opacity:1;pointer-events:none;';
     }},
     jsPDF:{unit:'mm',format:'a4',orientation},
     pagebreak:{mode:['css','legacy'],avoid:['tr']}
