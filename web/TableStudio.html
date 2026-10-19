@@ -190,193 +190,83 @@ th:first-child,td:first-child{width:44px;text-align:center;font-size:11px;color:
  $('saveData').addEventListener('click',()=>{closeSheet();exportData();});
  $('importData').addEventListener('click',()=>$('fileInput').click());
  $('fileInput').addEventListener('change',async e=>{const file=e.target.files&&e.target.files[0];if(!file)return;try{const obj=JSON.parse(await file.text());if(!Array.isArray(obj.values)||!Number.isInteger(obj.rows)||!Number.isInteger(obj.cols)||obj.rows<1||obj.rows>100||obj.cols<1||obj.cols>20)throw Error();rows=obj.rows;cols=obj.cols;hasHeader=!!obj.hasHeader;values=obj.values.map(row=>Array.isArray(row)?row.map(x=>String(x??'')):[]);$('docTitle').value=String(obj.title||'My Table');$('orientation').value=obj.orientation==='landscape'?'landscape':'portrait';$('fontSize').value=['8','9','11','12'].includes(String(obj.fontSize))?String(obj.fontSize):'9';$('headerToggle').checked=hasHeader;render();saveDraft();closeSheet();toast('Table imported');}catch(err){toast('Invalid table data file');}e.target.value='';});
- function pdfWrapText(ctx,text,maxWidth){
-  const paragraphs=String(text==null?'':text).replace(/\r\n?/g,'\n').split('\n');
-  const lines=[];
-  for(const paragraph of paragraphs){
-   if(!paragraph.length){lines.push('');continue;}
-   const words=paragraph.split(/\s+/).filter(Boolean);
-   if(!words.length){lines.push('');continue;}
-   let line='';
-   for(const word of words){
-    if(ctx.measureText(word).width<=maxWidth){
-     const trial=line?line+' '+word:word;
-     if(ctx.measureText(trial).width<=maxWidth){line=trial;continue;}
-     if(line)lines.push(line);
-     line=word;
-     continue;
-    }
-    if(line){lines.push(line);line='';}
-    let piece='';
-    for(const character of Array.from(word)){
-     const trial=piece+character;
-     if(piece&&ctx.measureText(trial).width>maxWidth){lines.push(piece);piece=character;}
-     else piece=trial;
-    }
-    line=piece;
-   }
-   if(line)lines.push(line);
-  }
-  return lines.length?lines:[''];
- }
- function pdfPageImagesToBlob(pages,landscape){
-  if(!pages.length)throw new Error('No PDF pages were rendered');
-  const pageWidth=landscape?841.89:595.28,pageHeight=landscape?595.28:841.89;
-  const objects=[];
-  objects[1]='<< /Type /Catalog /Pages 2 0 R >>';
-  const pageIds=pages.map((_,i)=>3+i*3);
-  objects[2]='<< /Type /Pages /Kids ['+pageIds.map(id=>id+' 0 R').join(' ')+'] /Count '+pages.length+' >>';
-  pages.forEach((page,i)=>{
-   const pageId=pageIds[i],imageId=pageId+1,contentId=pageId+2;
-   objects[pageId]='<< /Type /Page /Parent 2 0 R /MediaBox [0 0 '+pageWidth+' '+pageHeight+'] /Resources << /XObject << /Im0 '+imageId+' 0 R >> >> /Contents '+contentId+' 0 R >>';
-   objects[imageId]={image:page.bytes,width:page.width,height:page.height};
-   const stream='q\n'+pageWidth+' 0 0 '+pageHeight+' 0 0 cm\n/Im0 Do\nQ\n';
-   objects[contentId]='<< /Length '+stream.length+' >>\nstream\n'+stream+'endstream';
+ let pdfLibraryPromise=null;
+ function loadPdfLibrary(){
+  if(typeof window.html2pdf==='function')return Promise.resolve();
+  if(pdfLibraryPromise)return pdfLibraryPromise;
+  pdfLibraryPromise=new Promise((resolve,reject)=>{
+   const script=document.createElement('script');
+   script.src='https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+   script.crossOrigin='anonymous';
+   script.referrerPolicy='no-referrer';
+   script.onload=()=>typeof window.html2pdf==='function'?resolve():reject(new Error('PDF generator script loaded but html2pdf was not initialized'));
+   script.onerror=()=>{pdfLibraryPromise=null;reject(new Error('Could not load PDF generator from CDN'));};
+   document.head.appendChild(script);
   });
-  const encoder=new TextEncoder(),chunks=[];
-  let offset=0;
-  const add=bytes=>{chunks.push(bytes);offset+=bytes.length;};
-  const ascii=s=>encoder.encode(s);
-  add(ascii('%PDF-1.4\n'));
-  const offsets=new Array(objects.length).fill(0);
-  for(let id=1;id<objects.length;id++){
-   offsets[id]=offset;
-   add(ascii(id+' 0 obj\n'));
-   const obj=objects[id];
-   if(obj&&obj.image){
-    add(ascii('<< /Type /XObject /Subtype /Image /Width '+obj.width+' /Height '+obj.height+' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length '+obj.image.length+' >>\nstream\n'));
-    add(obj.image);
-    add(ascii('\nendstream'));
-   }else add(ascii(String(obj||'')));
-   add(ascii('\nendobj\n'));
-  }
-  const xrefOffset=offset;
-  add(ascii('xref\n0 '+objects.length+'\n0000000000 65535 f \n'));
-  for(let id=1;id<objects.length;id++)add(ascii(String(offsets[id]).padStart(10,'0')+' 00000 n \n'));
-  add(ascii('trailer\n<< /Size '+objects.length+' /Root 1 0 R >>\nstartxref\n'+xrefOffset+'\n%%EOF\n'));
-  const out=new Uint8Array(offset);let cursor=0;
-  for(const chunk of chunks){out.set(chunk,cursor);cursor+=chunk.length;}
-  return new Blob([out],{type:'application/pdf'});
+  return pdfLibraryPromise;
  }
- async function createTablePdf(){
-  readCellValues();
-  const landscape=$('orientation').value==='landscape';
-  const paperW=landscape?297:210,paperH=landscape?210:297;
-  const scale=72/25.4*2,margin=10,tableW=paperW-margin*2;
-  const requestedFont=Math.max(5,Number($('fontSize').value)||9);
-  const fontPt=cols>=16?Math.min(requestedFont,5.5):cols>=11?Math.min(requestedFont,6.5):cols>=8?Math.min(requestedFont,7.5):requestedFont;
-  const fontPx=fontPt*scale*25.4/72,lineH=fontPt*1.32*25.4/72,pad=1.6;
-  const widths=[];
-  if(cols===1)widths.push(tableW);
-  else{widths.push(Math.min(9,tableW*.18));const w=(tableW-widths[0])/(cols-1);for(let c=1;c<cols;c++)widths.push(w);}
-  const meas=document.createElement('canvas').getContext('2d');
-  meas.font=fontPx+'px Arial, sans-serif';
-  const wrapCells=row=>Array.from({length:cols},(_,c)=>{
-   meas.font=(hasHeader&&row===values[0]?'700 ':'')+fontPx+'px Arial, sans-serif';
-   return pdfWrapText(meas,row[c]??'',Math.max(2,(widths[c]-pad*2)*scale));
-  });
-  const headerLines=hasHeader?wrapCells(values[0]):null;
-  const bodyRows=hasHeader?values.slice(1,rows):values.slice(0,rows);
-  const bodyLines=bodyRows.map((row)=>wrapCells(row));
-  const maxLines=lines=>Math.max(1,...lines.map(v=>v.length));
-  const headerMaxLines=headerLines?maxLines(headerLines):0;
-  const headerMaxAllowed=Math.max(1,Math.floor((paperH-margin*2-10-pad*2)/lineH));
-  if(headerLines&&headerMaxLines>headerMaxAllowed)headerLines.forEach((a,i)=>{headerLines[i]=a.slice(0,headerMaxAllowed);});
-  const pages=[];
-  let page=null,bodyIndex=0;
-  function px(v){return v*scale;}
-  function setFont(ctx,bold=false,pt=fontPt){ctx.font=(bold?'700 ':'')+(pt*scale*25.4/72)+'px Arial, sans-serif';}
-  function startPage(first){
-   const canvas=document.createElement('canvas');
-   canvas.width=Math.ceil(px(paperW));canvas.height=Math.ceil(px(paperH));
-   const ctx=canvas.getContext('2d',{alpha:false});
-   if(!ctx)throw new Error('Canvas is not available in this browser');
-   ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);
-   ctx.textBaseline='top';ctx.lineWidth=Math.max(1,scale*.12);
-   const p={canvas,ctx,y:margin};
-   if(first){
-    const title=($('docTitle').value.trim()||'My Table').replace(/\s+/g,' ');
-    setFont(ctx,true,16);
-    const titleLines=pdfWrapText(ctx,title,px(tableW));
-    const titleLH=16*1.25*25.4/72;
-    ctx.fillStyle='#173330';ctx.textAlign='center';
-    titleLines.forEach((line,i)=>ctx.fillText(line,px(paperW/2),px(p.y+i*titleLH),px(tableW)));
-    p.y+=titleLines.length*titleLH+2;
-    setFont(ctx,false,8);ctx.fillStyle='#52645f';ctx.textAlign='right';
-    const date=new Date().toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'});
-    ctx.fillText(date,px(paperW-margin),px(p.y),px(tableW));
-    p.y+=5;
-   }
-   ctx.textAlign='left';
-   if(hasHeader)drawWholeHeader(p);
-   return p;
-  }
-  function drawCells(p,linesByCol,firstLine,lineCount,isHeader,bodyRowIndex){
-   const ctx=p.ctx,segmentLines=Math.max(1,lineCount),height=segmentLines*lineH+pad*2;
-   let x=margin;
-   for(let c=0;c<cols;c++){
-    const w=widths[c];
-    ctx.fillStyle=isHeader?'#dff2ec':(bodyRowIndex%2===1?'#f7fbfa':'#ffffff');
-    ctx.fillRect(px(x),px(p.y),px(w),px(height));
-    ctx.strokeStyle='#869b96';ctx.strokeRect(px(x),px(p.y),px(w),px(height));
-    setFont(ctx,isHeader);
-    ctx.fillStyle=isHeader?'#0d5148':'#152522';ctx.textAlign='left';
-    const chunk=(linesByCol[c]||['']).slice(firstLine,firstLine+segmentLines);
-    for(let j=0;j<chunk.length;j++)ctx.fillText(chunk[j],px(x+pad),px(p.y+pad)+j*px(lineH),Math.max(1,px(w-pad*2)));
-    x+=w;
-   }
-   p.y+=height;
-  }
-  function drawWholeHeader(p){
-   if(!headerLines)return;
-   drawCells(p,headerLines,0,Math.max(1,...headerLines.map(v=>v.length)),true,0);
-  }
-  function flushPage(p){
-   if(!p)return;
-   const data=p.canvas.toDataURL('image/jpeg',.9);
-   if(!data||data.length<1000)throw new Error('The table page could not be rendered');
-   const bin=atob(data.slice(data.indexOf(',')+1)),bytes=new Uint8Array(bin.length);
-   for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
-   pages.push({bytes,width:p.canvas.width,height:p.canvas.height});
-   p.canvas.width=0;p.canvas.height=0;
-  }
-  page=startPage(true);
-  const bottom=paperH-margin;
-  for(let r=0;r<bodyLines.length;r++){
-   const lines=bodyLines[r],totalLines=maxLines(lines);
-   let lineIndex=0;
-   while(lineIndex<totalLines){
-    let available=Math.floor((bottom-page.y-pad*2)/lineH);
-    if(available<1){flushPage(page);page=startPage(false);available=Math.floor((bottom-page.y-pad*2)/lineH);if(available<1)throw new Error('Table header leaves no room for rows');}
-    if(lineIndex===0&&totalLines>available){
-     const freshCapacity=Math.floor((bottom-(margin+(hasHeader?Math.max(1,headerMaxLines)*lineH+pad*2:0))-pad*2)/lineH);
-     if(totalLines<=freshCapacity){flushPage(page);page=startPage(false);continue;}
-    }
-    const take=Math.max(1,Math.min(totalLines-lineIndex,available));
-    drawCells(page,lines,lineIndex,take,false,r);
-    lineIndex+=take;
-    if(lineIndex<totalLines){flushPage(page);page=startPage(false);}
-   }
-  }
-  flushPage(page);
-  const blob=pdfPageImagesToBlob(pages,landscape);
-  if(!(blob instanceof Blob)||blob.size<1000)throw new Error('Generated PDF is empty');
-  return blob;
+ function downloadBlob(blob,filename){
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download=filename;a.style.display='none';document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),60000);
+ }
+ async function shareGeneratedPdf(){
+  if(!lastPdfBlob){toast('Create a PDF first');return;}
+  if(typeof File!=='function'||typeof navigator.share!=='function'||typeof navigator.canShare!=='function'){downloadBlob(lastPdfBlob,lastPdfName);closeSheet();toast('File sharing is not supported here. PDF downloaded.');return;}
+  const file=new File([lastPdfBlob],lastPdfName,{type:'application/pdf'});
+  try{
+   if(!navigator.canShare({files:[file]})){downloadBlob(lastPdfBlob,lastPdfName);closeSheet();toast('File sharing is not supported here. PDF downloaded.');return;}
+   await navigator.share({files:[file],title:$('docTitle').value.trim()||'Table PDF',text:'PDF table'});
+   closeSheet();toast('Share sheet opened');
+  }catch(err){if(err&&err.name==='AbortError')return;downloadBlob(lastPdfBlob,lastPdfName);closeSheet();toast('Could not share. PDF downloaded instead.');}
  }
  async function printTable(){
   const printButton=$('exportPdf'),topButton=$('printTop'),oldButton=printButton.innerHTML;
   printButton.disabled=true;topButton.disabled=true;printButton.innerHTML='…<span>Making PDF</span>';
-  closeSheet();syncSettings();saveDraft();
+  closeSheet();syncSettings();
+  table.querySelectorAll('[contenteditable=true]').forEach(el=>{const r=+el.dataset.r,c=+el.dataset.c;if(values[r])values[r][c]=el.innerText;});
+  toast('Creating your A4 PDF…');
   try{
-   toast('Rendering A4 pages…');
-   const filename=(($('docTitle').value.trim()||'table').replace(/[^\w -]/g,'').trim().replace(/\s+/g,'-')||'table')+'.pdf';
-   const blob=await createTablePdf();
-   lastPdfName=filename;lastPdfBlob=blob;openSheet('pdfReady');
+   await loadPdfLibrary();
+   const orientation=$('orientation').value,fontSize=$('fontSize').value;
+   const pageWidth=orientation==='landscape'?277:190;
+   lastPdfName=(($('docTitle').value.trim()||'table').replace(/[^\w -]/g,'').trim().replace(/\s+/g,'-')||'table')+'.pdf';
+   const options={
+    margin:[10,10,10,10],
+    image:{type:'jpeg',quality:0.98},
+    html2canvas:{
+     scale:2,
+     useCORS:true,
+     logging:false,
+     backgroundColor:'#ffffff',
+     scrollX:0,
+     scrollY:0,
+     onclone:function(clonedDoc){
+      const wrap=clonedDoc.getElementById('tableWrap');
+      if(!wrap)return;
+      wrap.style.cssText='width:'+pageWidth+'mm!important;min-width:0!important;max-width:none!important;min-height:0!important;height:auto!important;overflow:visible!important;position:static!important;background:#fff!important;box-sizing:border-box!important;';
+      const title=clonedDoc.getElementById('printTitle');
+      if(title)title.style.cssText='display:block!important;font-size:17pt!important;font-weight:800!important;text-align:center!important;margin:0 0 4mm!important;line-height:1.2!important;color:#173330!important;';
+      const date=clonedDoc.getElementById('printDate');
+      if(date)date.style.cssText='display:block!important;text-align:right!important;font-size:8pt!important;color:#52645f!important;margin:0 0 3mm!important;';
+      const clonedTable=clonedDoc.getElementById('dataTable');
+      if(clonedTable)clonedTable.style.cssText='width:100%!important;min-width:0!important;max-width:none!important;table-layout:auto!important;border-collapse:collapse!important;font-size:'+fontSize+'pt!important;background:#fff!important;';
+      const style=clonedDoc.createElement('style');
+      style.textContent='#tableWrap{width:'+pageWidth+'mm!important;overflow:visible!important}#dataTable th,#dataTable td{white-space:pre-wrap!important;overflow-wrap:anywhere!important;word-break:normal!important;border:1px solid #869b96!important;padding:6px 5px!important;color:#152522!important;vertical-align:top!important}#dataTable th{background:#dff2ec!important;color:#0d5148!important}#dataTable tbody tr:nth-child(even) td{background:#f7fbfa!important}#dataTable thead{display:table-header-group}#dataTable tr{break-inside:avoid!important;page-break-inside:avoid!important}';
+      clonedDoc.head.appendChild(style);
+     }
+    },
+    jsPDF:{unit:'mm',format:'a4',orientation},
+    pagebreak:{mode:['css','legacy'],avoid:['tr']}
+   };
+   const blob=await window.html2pdf().set(options).from($('tableWrap')).toPdf().outputPdf('blob').thenExternal(value=>value);
+   if(!(blob instanceof Blob)||blob.size<100)throw new Error('Generated PDF is empty');
+   lastPdfBlob=blob;
+   openSheet('pdfReady');
    toast('PDF created. Choose Share or Download.');
   }catch(error){
    console.error('PDF generation failed:',error);
-   const message=String(error&&error.message||error||'Unknown error');
-   toast('PDF failed: '+message.slice(0,115));
+   toast('PDF failed: '+String(error&&error.message||error||'Unknown error').slice(0,110));
   }finally{printButton.disabled=false;topButton.disabled=false;printButton.innerHTML=oldButton;}
  }
  $('downloadPdf').addEventListener('click',()=>{if(lastPdfBlob){downloadBlob(lastPdfBlob,lastPdfName);closeSheet();toast('PDF downloaded');}});
