@@ -248,8 +248,7 @@ th:first-child,td:first-child{width:44px;text-align:center;font-size:11px;color:
     jsPDF:{unit:'mm',format:'a4',orientation},
     pagebreak:{mode:['css','legacy'],avoid:['tr']}
    };
-   const worker=window.html2pdf().set(options).from($('tableWrap')).toPdf();
-   const blob=await worker.outputPdf('blob');
+   const blob=await window.html2pdf().set(options).from($('tableWrap')).toPdf().outputPdf('blob').thenExternal(value=>value);
    if(!(blob instanceof Blob)||blob.size<100)throw new Error('Generated PDF is empty');
    lastPdfBlob=blob;
    openSheet('pdfReady');
