@@ -36,8 +36,12 @@ button,input,select,textarea{font:inherit;max-width:100%}button{cursor:pointer;t
 .back-btn{border:1px solid #cfe8e1;background:var(--mint);color:var(--green2);padding:9px 11px;border-radius:11px;font-weight:850;font-size:12px;white-space:nowrap}
 .editor-brand{min-width:0;flex:1}.editor-brand strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;line-height:1.2}.editor-brand small{display:block;font-size:10px;color:var(--muted);margin-top:3px}
 .icon-btn{height:38px;width:39px;display:grid;place-items:center;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--green2);font-size:18px;flex:none}
-.editor-body{flex:1;min-height:0;min-width:0;overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y pinch-zoom;background:#f5f8f7}
-.table-wrap{min-height:100%;width:max-content;min-width:100%;overflow:visible;background:#fff}
+.editor-body{flex:1;min-height:0;min-width:0;overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y;background:#f5f8f7}
+.table-wrap{min-height:100%;width:max-content;min-width:100%;overflow:visible;background:#fff;zoom:1;transform-origin:top left}
+ .zoom-tools{position:sticky;top:0;left:0;z-index:8;display:flex;align-items:center;justify-content:flex-end;gap:5px;width:100%;min-height:44px;padding:7px 8px;background:linear-gradient(#f5f8f7 78%,#f5f8f700);}
+ .zoom-btn{height:30px;min-width:32px;padding:0 8px;border:1px solid #cfe1dc;border-radius:9px;background:#fff;color:var(--green2);font-size:15px;font-weight:850;line-height:1}
+ .zoom-level{min-width:46px;text-align:center;color:#48645e;font-size:11px;font-weight:850;font-variant-numeric:tabular-nums}
+ .zoom-fit{font-size:10px;min-width:62px}
 table{width:max-content;min-width:100%;border-collapse:collapse;table-layout:fixed;font-size:13px;background:#fff}
 th,td{border:1px solid #dbe7e3;padding:11px 9px;vertical-align:top;overflow-wrap:anywhere;white-space:pre-wrap;word-break:normal}
 th{background:#e6f5f0;color:#135e55;text-align:left;font-weight:850}
@@ -115,6 +119,7 @@ td[contenteditable=true]:focus,th[contenteditable=true]:focus{box-shadow:inset 0
   <button class="icon-btn" id="printTop" type="button" aria-label="Print table">▣</button>
  </header>
  <div class="editor-body" id="editorBody">
+  <div class="zoom-tools" id="zoomTools" aria-label="Table zoom controls"><button class="zoom-btn" id="zoomOut" type="button" aria-label="Zoom out table">−</button><span class="zoom-level" id="zoomLevel">100%</span><button class="zoom-btn" id="zoomIn" type="button" aria-label="Zoom in table">＋</button><button class="zoom-btn zoom-fit" id="zoomFit" type="button">Fit 10×10</button></div>
   <div class="table-wrap" id="tableWrap">
    <div id="printTitle">My Table</div><div class="print-date" id="printDate"></div>
    <table id="dataTable" aria-label="Editable table"></table>
@@ -146,12 +151,39 @@ td[contenteditable=true]:focus,th[contenteditable=true]:focus{box-shadow:inset 0
 <script>
 (function(){
  const $=id=>document.getElementById(id),table=$('dataTable');
- let rows=4,cols=4,hasHeader=true,showSerial=true,values=[],selectedCell=null,toastTimer=null,saveTimer=null,sheetMode='lines',lastPdfBlob=null,lastPdfName='table.pdf';
+ let rows=4,cols=4,hasHeader=true,showSerial=true,tableZoom=1,pinchStartDistance=0,pinchStartZoom=1,isTablePinching=false,values=[],selectedCell=null,toastTimer=null,saveTimer=null,sheetMode='lines',lastPdfBlob=null,lastPdfName='table.pdf';
  const DRAFT_KEY='royall.table-studio.draft.v1';
  function readCellValues(){table.querySelectorAll('[contenteditable=true]').forEach(el=>{const r=+el.dataset.r,c=+el.dataset.c;if(values[r])values[r][c]=el.innerText;});}
- function saveDraft(){try{readCellValues();localStorage.setItem(DRAFT_KEY,JSON.stringify({version:1,title:$('docTitle').value,orientation:$('orientation').value,fontSize:$('fontSize').value,hasHeader,showSerial,rows,cols,values,savedAt:Date.now()}));}catch(err){console.warn('Draft could not be saved',err);}}
+ function saveDraft(){try{readCellValues();localStorage.setItem(DRAFT_KEY,JSON.stringify({version:1,title:$('docTitle').value,orientation:$('orientation').value,fontSize:$('fontSize').value,hasHeader,showSerial,tableZoom,rows,cols,values,savedAt:Date.now()}));}catch(err){console.warn('Draft could not be saved',err);}}
  function scheduleSave(){clearTimeout(saveTimer);saveTimer=setTimeout(saveDraft,180);}
- function restoreDraft(){try{const raw=localStorage.getItem(DRAFT_KEY);if(!raw)return false;const d=JSON.parse(raw);if(!d||!Array.isArray(d.values)||!Number.isInteger(d.rows)||!Number.isInteger(d.cols)||d.rows<1||d.rows>100||d.cols<1||d.cols>20)return false;rows=d.rows;cols=d.cols;hasHeader=!!d.hasHeader;showSerial=d.showSerial===undefined?true:!!d.showSerial;values=d.values.slice(0,rows).map(row=>Array.isArray(row)?row.slice(0,cols).map(x=>String(x==null?'':x)):[]);$('docTitle').value=String(d.title||'My Table').slice(0,120);$('orientation').value=d.orientation==='landscape'?'landscape':'portrait';$('fontSize').value=['8','9','11','12'].includes(String(d.fontSize))?String(d.fontSize):'9';$('headerToggle').checked=hasHeader;$('serialToggle').checked=showSerial;ensureVisibleColumn();fitValues();return true;}catch(err){console.warn('Draft could not be restored',err);return false;}}
+  function clampTableZoom(value){return Math.round(Math.min(2.5,Math.max(0.2,Number(value)||1))*100)/100;}
+  function applyTableZoom(value,save=true){tableZoom=clampTableZoom(value);$('tableWrap').style.zoom=String(tableZoom);$('zoomLevel').textContent=Math.round(tableZoom*100)+'%';if(save)scheduleSave();}
+  function fitTableView(){
+   const body=$('editorBody'),wrap=$('tableWrap'),oldZoom=tableZoom;
+   wrap.style.zoom='1';
+   const tableWidth=Math.max(1,table.getBoundingClientRect().width);
+   const firstRow=table.rows&&table.rows.length?table.rows[0]:null;
+   const rowHeight=Math.max(34,firstRow?firstRow.getBoundingClientRect().height:45);
+   wrap.style.zoom=String(oldZoom);
+   const dataCols=Math.max(1,cols-1),visibleCols=Math.min(9,dataCols),serialWidth=showSerial?44:0;
+   const dataColWidth=Math.max(1,(tableWidth-serialWidth)/dataCols);
+   const widthNeeded=visibleCols*dataColWidth+serialWidth;
+   const heightNeeded=Math.min(10,Math.max(1,table.rows.length))*rowHeight;
+   const fitWidth=(body.clientWidth-16)/widthNeeded;
+   const fitHeight=(body.clientHeight-$('zoomTools').offsetHeight-16)/heightNeeded;
+   applyTableZoom(Math.min(1,fitWidth,fitHeight));
+   body.scrollTop=0;body.scrollLeft=0;
+   toast('Fit to about 10 columns and 10 rows');
+  }
+  function touchDistance(touches){const dx=touches[0].clientX-touches[1].clientX,dy=touches[0].clientY-touches[1].clientY;return Math.sqrt(dx*dx+dy*dy);}
+  $('zoomOut').addEventListener('click',()=>applyTableZoom(tableZoom*0.8));
+  $('zoomIn').addEventListener('click',()=>applyTableZoom(tableZoom*1.2));
+  $('zoomFit').addEventListener('click',fitTableView);
+  $('editorBody').addEventListener('touchstart',e=>{if(e.touches.length===2){isTablePinching=true;pinchStartDistance=Math.max(1,touchDistance(e.touches));pinchStartZoom=tableZoom;e.preventDefault();}},{passive:false});
+  $('editorBody').addEventListener('touchmove',e=>{if(isTablePinching&&e.touches.length===2){e.preventDefault();applyTableZoom(pinchStartZoom*touchDistance(e.touches)/pinchStartDistance,false);}},{passive:false});
+  $('editorBody').addEventListener('touchend',e=>{if(isTablePinching&&e.touches.length<2){isTablePinching=false;scheduleSave();}},{passive:true});
+  $('editorBody').addEventListener('touchcancel',()=>{if(isTablePinching){isTablePinching=false;scheduleSave();}},{passive:true});
+ function restoreDraft(){try{const raw=localStorage.getItem(DRAFT_KEY);if(!raw)return false;const d=JSON.parse(raw);if(!d||!Array.isArray(d.values)||!Number.isInteger(d.rows)||!Number.isInteger(d.cols)||d.rows<1||d.rows>100||d.cols<1||d.cols>20)return false;rows=d.rows;cols=d.cols;hasHeader=!!d.hasHeader;showSerial=d.showSerial===undefined?true:!!d.showSerial;tableZoom=d.tableZoom===undefined?1:clampTableZoom(d.tableZoom);values=d.values.slice(0,rows).map(row=>Array.isArray(row)?row.slice(0,cols).map(x=>String(x==null?'':x)):[]);$('docTitle').value=String(d.title||'My Table').slice(0,120);$('orientation').value=d.orientation==='landscape'?'landscape':'portrait';$('fontSize').value=['8','9','11','12'].includes(String(d.fontSize))?String(d.fontSize):'9';$('headerToggle').checked=hasHeader;$('serialToggle').checked=showSerial;ensureVisibleColumn();fitValues();return true;}catch(err){console.warn('Draft could not be restored',err);return false;}}
  function seed(){values=[];for(let r=0;r<rows;r++){values[r]=[];for(let c=0;c<cols;c++)values[r][c]=r===0&&c===0?'No.':r===0&&hasHeader?'Column '+(c+1):c===0?String(r):'';}}
  function ensureVisibleColumn(){if(!showSerial&&cols<2){cols=2;values.forEach((row,r)=>{while(row.length<cols)row.push(hasHeader&&r===0?'Column '+(row.length+1):'');});}}
   function fitValues(){while(values.length<rows)values.push(Array.from({length:cols},(_,c)=>c===0?String(values.length):''));values=values.slice(0,rows);values.forEach((row,r)=>{while(row.length<cols)row.push(r===0&&hasHeader?'Column '+(row.length+1):'');row.length=cols;});}
@@ -169,7 +201,7 @@ td[contenteditable=true]:focus,th[contenteditable=true]:focus{box-shadow:inset 0
  function removeCol(){if(cols<=2){toast('Keep at least one data column');return;}values.forEach(row=>row.pop());cols--;render();toast('Last column removed');}
  function exportData(){const data={title:$('docTitle').value,orientation:$('orientation').value,fontSize:$('fontSize').value,hasHeader,showSerial,rows,cols,values};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=(($('docTitle').value.trim()||'table').replace(/[^\w -]/g,'').trim().replace(/\s+/g,'-')||'table')+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),500);toast('Table data saved');}
  function resizeTable(newRows,newCols){const next=[];for(let r=0;r<newRows;r++){next[r]=[];for(let c=0;c<newCols;c++){next[r][c]=values[r]&&values[r][c]!=null?values[r][c]:(hasHeader&&r===0?(c===0?'No.':'Column '+(c+1)):c===0?String(r):'');}}rows=newRows;cols=newCols;values=next;}
- function setScreen(editor,push){const home=$('homeScreen'),edit=$('editorScreen');if(!editor)saveDraft();home.hidden=editor;edit.hidden=!editor;document.body.style.overflow=editor?'hidden':'';$('viewportMeta').content=editor?'width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes,viewport-fit=cover':'width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover';if(editor){hasHeader=$('headerToggle').checked;showSerial=$('serialToggle').checked;ensureVisibleColumn();render();syncSettings();}else{$('headerToggle').checked=hasHeader;$('serialToggle').checked=showSerial;}if(push)history.pushState({screen:editor?'editor':'home'},'',location.pathname+location.search+(editor?'#editor':'#home'));window.scrollTo(0,0);}
+ function setScreen(editor,push){const home=$('homeScreen'),edit=$('editorScreen');if(!editor)saveDraft();home.hidden=editor;edit.hidden=!editor;document.body.style.overflow=editor?'hidden':'';$('viewportMeta').content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover';if(editor){hasHeader=$('headerToggle').checked;showSerial=$('serialToggle').checked;ensureVisibleColumn();render();syncSettings();applyTableZoom(tableZoom,false);}else{$('headerToggle').checked=hasHeader;$('serialToggle').checked=showSerial;}if(push)history.pushState({screen:editor?'editor':'home'},'',location.pathname+location.search+(editor?'#editor':'#home'));window.scrollTo(0,0);}
  window.addEventListener('resize',()=>{if(!$('editorScreen').hidden)sizeTable();});
  $('openEditor').addEventListener('click',()=>setScreen(true,true));
  function confirmLeaveEditor(){saveDraft();return confirm('Leave the table editor? Your draft is automatically saved on this device, so you can reopen it later.');}
@@ -278,7 +310,7 @@ td[contenteditable=true]:focus,th[contenteditable=true]:focus{box-shadow:inset 0
  $('sharePdf').addEventListener('click',shareGeneratedPdf);
  $('closePdfReady').addEventListener('click',closeSheet);
  $('exportPdf').addEventListener('click',printTable);$('printTop').addEventListener('click',printTable);
- const restored=restoreDraft();if(!restored)seed();render();
+ const restored=restoreDraft();if(!restored)seed();render();applyTableZoom(tableZoom,false);
  if(location.hash==='#editor'){setScreen(true,false);}else{history.replaceState({screen:'home'},'',location.pathname+location.search+'#home');}
  if(restored)toast('Draft restored from this device');
 })();
