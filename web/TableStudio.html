@@ -173,7 +173,7 @@ th:first-child,td:first-child{width:44px;text-align:center;font-size:11px;color:
  $('sheetBackdrop').addEventListener('click',e=>{if(e.target===$('sheetBackdrop'))closeSheet();});
  $('removeRow').addEventListener('click',()=>{closeSheet();removeRow();});$('removeCol').addEventListener('click',()=>{closeSheet();removeCol();});
  $('toggleHeader').addEventListener('click',()=>{hasHeader=!hasHeader;$('headerToggle').checked=hasHeader;render();closeSheet();toast(hasHeader?'Header enabled':'Header disabled');});
- $('clearText').addEventListener('click',()=>{values=Array.from({length:rows},()=>Array(cols).fill(''));if(hasHeader)values[0]=Array.from({length:cols},(_,c)=>c===0?'No.':'Column '+(c+1));render();closeSheet();toast('Cell text cleared');});
+ $('clearText').addEventListener('click',()=>{if(!selectedCell){toast('Select a cell first');return;}const r=+selectedCell.dataset.r,c=+selectedCell.dataset.c;values[r][c]='';selectedCell.textContent='';closeSheet();toast('Selected cell cleared');});
  $('resetTable').addEventListener('click',()=>{if(confirm('Reset the table to a blank 4 × 4 table?')){rows=4;cols=4;hasHeader=$('headerToggle').checked;seed();render();closeSheet();toast('Table reset');}});
  $('saveData').addEventListener('click',()=>{closeSheet();exportData();});
  $('importData').addEventListener('click',()=>$('fileInput').click());
