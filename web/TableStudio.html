@@ -192,18 +192,26 @@ th:first-child,td:first-child{width:44px;text-align:center;font-size:11px;color:
  $('fileInput').addEventListener('change',async e=>{const file=e.target.files&&e.target.files[0];if(!file)return;try{const obj=JSON.parse(await file.text());if(!Array.isArray(obj.values)||!Number.isInteger(obj.rows)||!Number.isInteger(obj.cols)||obj.rows<1||obj.rows>100||obj.cols<1||obj.cols>20)throw Error();rows=obj.rows;cols=obj.cols;hasHeader=!!obj.hasHeader;values=obj.values.map(row=>Array.isArray(row)?row.map(x=>String(x??'')):[]);$('docTitle').value=String(obj.title||'My Table');$('orientation').value=obj.orientation==='landscape'?'landscape':'portrait';$('fontSize').value=['8','9','11','12'].includes(String(obj.fontSize))?String(obj.fontSize):'9';$('headerToggle').checked=hasHeader;render();saveDraft();closeSheet();toast('Table imported');}catch(err){toast('Invalid table data file');}e.target.value='';});
  let pdfLibraryPromise=null;
  function loadPdfLibrary(){
-  if(typeof window.html2pdf==='function')return Promise.resolve();
+  if(window.jspdf&&window.jspdf.jsPDF&&window.jspdf.jsPDF.API)return ensureAutoTable();
   if(pdfLibraryPromise)return pdfLibraryPromise;
   pdfLibraryPromise=new Promise((resolve,reject)=>{
    const script=document.createElement('script');
-   script.src='https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
-   script.crossOrigin='anonymous';
-   script.referrerPolicy='no-referrer';
-   script.onload=()=>typeof window.html2pdf==='function'?resolve():reject(new Error('PDF generator script loaded but html2pdf was not initialized'));
-   script.onerror=()=>{pdfLibraryPromise=null;reject(new Error('Could not load PDF generator from CDN'));};
+   script.src='https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js';
+   script.onload=()=>window.jspdf&&window.jspdf.jsPDF?ensureAutoTable().then(resolve,reject):reject(new Error('jsPDF did not initialize'));
+   script.onerror=()=>{pdfLibraryPromise=null;reject(new Error('Could not load jsPDF'));};
    document.head.appendChild(script);
   });
   return pdfLibraryPromise;
+ }
+ function ensureAutoTable(){
+  if(window.jspdf&&window.jspdf.jsPDF&&window.jspdf.jsPDF.API&&typeof window.jspdf.jsPDF.API.autoTable==='function')return Promise.resolve();
+  return new Promise((resolve,reject)=>{
+   const script=document.createElement('script');
+   script.src='https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js';
+   script.onload=()=>window.jspdf&&window.jspdf.jsPDF&&typeof window.jspdf.jsPDF.API.autoTable==='function'?resolve():reject(new Error('Table PDF plugin did not initialize'));
+   script.onerror=()=>{pdfLibraryPromise=null;reject(new Error('Could not load table PDF plugin'));};
+   document.head.appendChild(script);
+  });
  }
  function downloadBlob(blob,filename){
   const url=URL.createObjectURL(blob),a=document.createElement('a');
@@ -228,42 +236,31 @@ th:first-child,td:first-child{width:44px;text-align:center;font-size:11px;color:
   toast('Creating your A4 PDF…');
   try{
    await loadPdfLibrary();
-   const orientation=$('orientation').value,fontSize=$('fontSize').value;
-   const pageWidth=orientation==='landscape'?277:190;
+   const orientation=$('orientation').value,fontSize=Number($('fontSize').value)||9;
    lastPdfName=(($('docTitle').value.trim()||'table').replace(/[^\w -]/g,'').trim().replace(/\s+/g,'-')||'table')+'.pdf';
-   const options={
-    margin:[10,10,10,10],
-    image:{type:'jpeg',quality:0.98},
-    html2canvas:{
-     scale:2,
-     useCORS:true,
-     logging:false,
-     backgroundColor:'#ffffff',
-     scrollX:0,
-     scrollY:0,
-     onclone:function(clonedDoc){
-      const wrap=clonedDoc.getElementById('tableWrap');
-      if(!wrap)return;
-      wrap.style.cssText='width:'+pageWidth+'mm!important;min-width:0!important;max-width:none!important;min-height:0!important;height:auto!important;overflow:visible!important;position:static!important;background:#fff!important;box-sizing:border-box!important;';
-      const title=clonedDoc.getElementById('printTitle');
-      if(title)title.style.cssText='display:block!important;font-size:17pt!important;font-weight:800!important;text-align:center!important;margin:0 0 4mm!important;line-height:1.2!important;color:#173330!important;';
-      const date=clonedDoc.getElementById('printDate');
-      if(date)date.style.cssText='display:block!important;text-align:right!important;font-size:8pt!important;color:#52645f!important;margin:0 0 3mm!important;';
-      const clonedTable=clonedDoc.getElementById('dataTable');
-      if(clonedTable){
-       clonedTable.style.cssText='width:100%!important;min-width:0!important;max-width:none!important;table-layout:fixed!important;border-collapse:collapse!important;font-size:'+fontSize+'pt!important;background:#fff!important;display:table!important;';
-       clonedTable.querySelectorAll('th,td').forEach(function(cell){cell.style.minHeight='10mm';cell.style.height='10mm';if(!cell.textContent.trim())cell.innerHTML='&nbsp;';});
-      }
-      const style=clonedDoc.createElement('style');
-      style.textContent='#tableWrap{width:'+pageWidth+'mm!important;min-height:10mm!important;overflow:visible!important;display:block!important}#dataTable{width:100%!important;display:table!important}#dataTable th,#dataTable td{height:10mm!important;min-height:10mm!important;white-space:pre-wrap!important;overflow-wrap:anywhere!important;word-break:normal!important;border:1px solid #869b96!important;padding:6px 5px!important;color:#152522!important;vertical-align:top!important;box-sizing:border-box!important}#dataTable th{background:#dff2ec!important;color:#0d5148!important}#dataTable tbody tr:nth-child(even) td{background:#f7fbfa!important}#dataTable thead{display:table-header-group}#dataTable tr{break-inside:avoid!important;page-break-inside:avoid!important}';
-      clonedDoc.head.appendChild(style);
-     }
-    },
-    jsPDF:{unit:'mm',format:'a4',orientation},
-    pagebreak:{mode:['css','legacy'],avoid:['tr']}
-   };
-   const blob=await window.html2pdf().set(options).from($('tableWrap')).toPdf().outputPdf('blob').thenExternal(value=>value);
-   if(!(blob instanceof Blob)||blob.size<100)throw new Error('Generated PDF is empty');
+   const JsPDF=window.jspdf.jsPDF,doc=new JsPDF({orientation:orientation,unit:'mm',format:'a4',compress:true});
+   const title=($('docTitle').value.trim()||'My Table').slice(0,120);
+   const bodyRows=hasHeader?values.slice(1,rows):values.slice(0,rows);
+   const safeCell=v=>String(v==null?'':v).replace(/\r\n?/g,'\n');
+   const headRows=hasHeader&&values.length?[values[0].slice(0,cols).map(safeCell)]:[];
+   const body=bodyRows.map(row=>Array.from({length:cols},(_,c)=>safeCell(row&&row[c])));
+   doc.setFont('helvetica','bold');doc.setFontSize(15);doc.setTextColor(23,51,48);
+   doc.text(title,doc.internal.pageSize.getWidth()/2,13,{align:'center',maxWidth:doc.internal.pageSize.getWidth()-20});
+   doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(82,100,95);
+   doc.text(new Date().toLocaleDateString(),doc.internal.pageSize.getWidth()-10,18,{align:'right'});
+   doc.autoTable({
+    head:headRows,body:body,startY:22,margin:{top:22,right:10,bottom:10,left:10},
+    theme:'grid',tableWidth:'auto',showHead:hasHeader?'everyPage':'never',
+    styles:{font:'helvetica',fontSize:fontSize,cellPadding:2,minCellHeight:10,overflow:'linebreak',valign:'middle',lineColor:[134,155,150],lineWidth:0.2,textColor:[21,37,34]},
+    headStyles:{fillColor:[223,242,236],textColor:[13,81,72],fontStyle:'bold',minCellHeight:10},
+    alternateRowStyles:{fillColor:[247,251,250]},
+    columnStyles:{0:{cellWidth:Math.min(14,orientation==='landscape'?14:12)}},
+    didDrawPage:function(){if(doc.internal.getNumberOfPages()>1){doc.setFont('helvetica','bold');doc.setFontSize(15);doc.setTextColor(23,51,48);doc.text(title,doc.internal.pageSize.getWidth()/2,13,{align:'center',maxWidth:doc.internal.pageSize.getWidth()-20});}}
+   });
+   const blob=doc.output('blob');
+   if(!(blob instanceof Blob)||blob.size<500)throw new Error('PDF output is unexpectedly small');
+   const signature=new Uint8Array(await blob.slice(0,5).arrayBuffer());
+   if(String.fromCharCode.apply(null,signature)!=='%PDF-')throw new Error('PDF signature check failed');
    lastPdfBlob=blob;
    openSheet('pdfReady');
    toast('PDF created. Choose Share or Download.');
