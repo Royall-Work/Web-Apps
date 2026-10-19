@@ -38,7 +38,7 @@ button,input,select,textarea{font:inherit;max-width:100%}button{cursor:pointer;t
 .icon-btn{height:38px;width:39px;display:grid;place-items:center;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--green2);font-size:18px;flex:none}
 .editor-body{flex:1;min-height:0;min-width:0;overflow:auto;overscroll-behavior:contain;background:#f5f8f7}
 .table-wrap{min-height:100%;width:100%;overflow:auto;overscroll-behavior:contain;background:#fff;scrollbar-width:thin;scrollbar-color:#b8d6cf #f2f7f5}
-table{width:max-content;min-width:100%;border-collapse:collapse;table-layout:auto;font-size:13px;background:#fff}
+table{width:100%;min-width:100%;border-collapse:collapse;table-layout:auto;font-size:13px;background:#fff}
 th,td{border:1px solid #dbe7e3;padding:11px 9px;vertical-align:top;overflow-wrap:anywhere;white-space:pre-wrap;word-break:normal}
 th{background:#e6f5f0;color:#135e55;text-align:left;font-weight:850}
 tbody tr:nth-child(even) td{background:#fbfdfc}
@@ -123,7 +123,7 @@ th:first-child,td:first-child{width:44px;text-align:center;font-size:11px;color:
   <button class="tool-btn" id="addRow" type="button">＋<span>Add row</span></button>
   <button class="tool-btn" id="addCol" type="button">▥<span>Add column</span></button>
   <button class="tool-btn" id="openLines" type="button">↵<span>Lines</span></button>
-  <button class="tool-btn primary" id="exportPdf" type="button">▣<span>Print PDF</span></button>
+  <button class="tool-btn primary" id="exportPdf" type="button">▣<span>Make PDF</span></button>
   <button class="tool-btn" id="openMore" type="button">•••<span>More</span></button>
  </nav>
 </section>
@@ -132,6 +132,7 @@ th:first-child,td:first-child{width:44px;text-align:center;font-size:11px;color:
  <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
   <div class="sheet-handle"></div><h2 id="sheetTitle">Cell items</h2><p id="sheetDescription">Enter each item on a separate line.</p>
   <div id="linesView"><textarea id="lineBox" placeholder="Item one&#10;Item two" rows="4"></textarea><div class="sheet-actions"><button class="action-btn" id="closeSheet" type="button">Cancel</button><button class="action-btn primary" id="applyLines" type="button">Insert into cell</button></div></div>
+  <div id="pdfReadyView" hidden><div class="settings-tip" style="margin:12px 0"><span style="font-size:20px">✓</span><div><b>Your PDF is ready</b><br>Share the actual PDF file or save it to your device. No print app is needed.</div></div><div class="sheet-actions"><button class="action-btn soft" id="downloadPdf" type="button">↓ Download PDF</button><button class="action-btn primary" id="sharePdf" type="button">↗ Share PDF</button></div><button class="action-btn" id="closePdfReady" type="button" style="width:100%;margin-top:8px">Close</button></div>
   <div class="sheet-menu" id="moreView" hidden>
    <button class="action-btn soft" id="removeRow" type="button">− Remove last row</button><button class="action-btn soft" id="removeCol" type="button">− Remove last column</button>
    <button class="action-btn" id="toggleHeader" type="button">Toggle header row</button><button class="action-btn" id="clearText" type="button">Clear cell text</button>
@@ -144,7 +145,7 @@ th:first-child,td:first-child{width:44px;text-align:center;font-size:11px;color:
 <script>
 (function(){
  const $=id=>document.getElementById(id),table=$('dataTable');
- let rows=4,cols=4,hasHeader=true,values=[],selectedCell=null,toastTimer=null,sheetMode='lines';
+ let rows=4,cols=4,hasHeader=true,values=[],selectedCell=null,toastTimer=null,sheetMode='lines',lastPdfBlob=null,lastPdfName='table.pdf';
  function seed(){values=[];for(let r=0;r<rows;r++){values[r]=[];for(let c=0;c<cols;c++)values[r][c]=r===0&&c===0?'No.':r===0&&hasHeader?'Column '+(c+1):c===0?String(r):'';}}
  function fitValues(){while(values.length<rows)values.push(Array.from({length:cols},(_,c)=>c===0?String(values.length):''));values=values.slice(0,rows);values.forEach((row,r)=>{while(row.length<cols)row.push(r===0&&hasHeader?'Column '+(row.length+1):'');row.length=cols;});}
  function syncSettings(){const t=$('docTitle').value.trim()||'My Table';$('editorTitle').textContent=t;$('printTitle').textContent=t;$('printDate').textContent=new Date().toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'});document.title=t+' — Table Studio';}
@@ -152,7 +153,7 @@ th:first-child,td:first-child{width:44px;text-align:center;font-size:11px;color:
  function makeCell(value,isHead,r,c){const el=document.createElement(isHead?'th':'td');el.contentEditable='true';el.spellcheck=false;el.textContent=value==null?'':value;el.dataset.r=r;el.dataset.c=c;el.addEventListener('focus',()=>selectCell(el));el.addEventListener('click',()=>selectCell(el));el.addEventListener('input',()=>{values[r][c]=el.innerText;});return el;}
  function selectCell(el){selectedCell=el;$('lineBox').value=el.innerText||el.textContent||'';}
  function toast(msg){const el=$('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2000);}
- function openSheet(mode){sheetMode=mode;$('sheetBackdrop').classList.add('open');$('linesView').hidden=mode!=='lines';$('moreView').hidden=mode!=='more';$('sheetTitle').textContent=mode==='lines'?'Enter multiple lines':'Table tools';$('sheetDescription').textContent=mode==='lines'?'Each line will be placed inside the selected cell.':'Manage rows, columns and table data.';if(mode==='lines'){$('lineBox').value=selectedCell?(selectedCell.innerText||selectedCell.textContent||''):'';setTimeout(()=>$('lineBox').focus(),150);}}
+ function openSheet(mode){sheetMode=mode;$('sheetBackdrop').classList.add('open');$('linesView').hidden=mode!=='lines';$('moreView').hidden=mode!=='more';$('pdfReadyView').hidden=mode!=='pdfReady';$('sheetTitle').textContent=mode==='lines'?'Enter multiple lines':mode==='pdfReady'?'PDF ready':'Table tools';$('sheetDescription').textContent=mode==='lines'?'Each line will be placed inside the selected cell.':mode==='pdfReady'?'Choose how to use your generated PDF.':'Manage rows, columns and table data.';if(mode==='lines'){$('lineBox').value=selectedCell?(selectedCell.innerText||selectedCell.textContent||''):'';setTimeout(()=>$('lineBox').focus(),150);}}
  function closeSheet(){$('sheetBackdrop').classList.remove('open');}
  function addRow(){if(rows>=100){toast('Maximum 100 rows');return;}values.push(Array.from({length:cols},(_,c)=>c===0?String(rows):''));rows++;render();toast('Row added');}
  function addCol(){if(cols>=20){toast('Maximum 20 columns');return;}cols++;values.forEach((row,r)=>row.push(hasHeader&&r===0?'Column '+cols:''));render();toast('Column added');}
@@ -184,27 +185,41 @@ th:first-child,td:first-child{width:44px;text-align:center;font-size:11px;color:
   if(pdfLibraryPromise)return pdfLibraryPromise;
   pdfLibraryPromise=new Promise((resolve,reject)=>{
    const script=document.createElement('script');
-   script.src='https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.12.1/html2pdf.bundle.min.js';
+   script.src='https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+   script.crossOrigin='anonymous';
+   script.referrerPolicy='no-referrer';
    script.onload=()=>typeof window.html2pdf==='function'?resolve():reject(new Error('PDF library unavailable'));
    script.onerror=()=>reject(new Error('Could not load PDF generator'));
    document.head.appendChild(script);
   });
   return pdfLibraryPromise;
  }
+ function downloadBlob(blob,filename){
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download=filename;a.style.display='none';document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),60000);
+ }
+ async function shareGeneratedPdf(){
+  if(!lastPdfBlob){toast('Create a PDF first');return;}
+  const file=new File([lastPdfBlob],lastPdfName,{type:'application/pdf'});
+  if(typeof navigator.share==='function'&&typeof navigator.canShare==='function'&&navigator.canShare({files:[file]})){
+   try{await navigator.share({files:[file],title:$('docTitle').value.trim()||'Table PDF',text:'PDF table'});closeSheet();toast('Share sheet opened');}
+   catch(err){if(err&&err.name==='AbortError')return;downloadBlob(lastPdfBlob,lastPdfName);closeSheet();toast('Could not share. PDF downloaded instead.');}
+  }else{downloadBlob(lastPdfBlob,lastPdfName);closeSheet();toast('File sharing is not supported here. PDF downloaded.');}
+ }
  async function printTable(){
   const printButton=$('exportPdf'),topButton=$('printTop'),oldButton=printButton.innerHTML;
-  printButton.disabled=true;topButton.disabled=true;printButton.innerHTML='…<span>Creating PDF</span>';
+  printButton.disabled=true;topButton.disabled=true;printButton.innerHTML='…<span>Making PDF</span>';
   closeSheet();syncSettings();
   table.querySelectorAll('[contenteditable=true]').forEach(el=>{const r=+el.dataset.r,c=+el.dataset.c;if(values[r])values[r][c]=el.innerText;});
-  toast('Preparing your A4 PDF…');
+  toast('Creating your A4 PDF…');
   try{
    await loadPdfLibrary();
    const orientation=$('orientation').value,fontSize=$('fontSize').value;
    const pageWidth=orientation==='landscape'?277:190;
-   const filename=(($('docTitle').value.trim()||'table').replace(/[^\w -]/g,'').trim().replace(/\s+/g,'-')||'table')+'.pdf';
+   lastPdfName=(($('docTitle').value.trim()||'table').replace(/[^\w -]/g,'').trim().replace(/\s+/g,'-')||'table')+'.pdf';
    const options={
     margin:[10,10,10,10],
-    filename,
     image:{type:'jpeg',quality:0.98},
     html2canvas:{
      scale:2,
@@ -231,18 +246,21 @@ th:first-child,td:first-child{width:44px;text-align:center;font-size:11px;color:
     jsPDF:{unit:'mm',format:'a4',orientation},
     pagebreak:{mode:['css','legacy'],avoid:['tr']}
    };
-   await window.html2pdf().set(options).from($('tableWrap')).save();
-   toast('A4 PDF downloaded');
+   const worker=window.html2pdf().set(options).from($('tableWrap')).toPdf();
+   const blob=await worker.outputPdf('blob');
+   if(!(blob instanceof Blob)||blob.size<100)throw new Error('Generated PDF is empty');
+   lastPdfBlob=blob;
+   openSheet('pdfReady');
+   toast('PDF created. Choose Share or Download.');
   }catch(error){
    console.error('PDF generation failed:',error);
-   toast('Direct PDF unavailable. Opening print preview…');
-   try{window.focus();window.print();}catch(printError){toast('PDF could not open here. Open this page in Chrome to print.');}
+   toast('PDF failed. Check your internet connection and retry.');
   }finally{printButton.disabled=false;topButton.disabled=false;printButton.innerHTML=oldButton;}
  }
+ $('downloadPdf').addEventListener('click',()=>{if(lastPdfBlob){downloadBlob(lastPdfBlob,lastPdfName);closeSheet();toast('PDF downloaded');}});
+ $('sharePdf').addEventListener('click',shareGeneratedPdf);
+ $('closePdfReady').addEventListener('click',closeSheet);
  $('exportPdf').addEventListener('click',printTable);$('printTop').addEventListener('click',printTable);
- window.addEventListener('beforeprint',()=>{table.querySelectorAll('[contenteditable=true]').forEach(el=>{const r=+el.dataset.r,c=+el.dataset.c;if(values[r])values[r][c]=el.innerText;});syncSettings();});
- seed();render();
- if(location.hash==='#editor')setScreen(true,false);
 })();
 </script>
 </body>
