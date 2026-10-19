@@ -186,11 +186,10 @@ th:first-child,td:first-child{width:44px;text-align:center;font-size:11px;color:
   pdfLibraryPromise=new Promise((resolve,reject)=>{
    const script=document.createElement('script');
    script.src='https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
-   script.integrity='sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==';
    script.crossOrigin='anonymous';
    script.referrerPolicy='no-referrer';
-   script.onload=()=>typeof window.html2pdf==='function'?resolve():reject(new Error('PDF library unavailable'));
-   script.onerror=()=>reject(new Error('Could not load PDF generator'));
+   script.onload=()=>typeof window.html2pdf==='function'?resolve():reject(new Error('PDF generator script loaded but html2pdf was not initialized'));
+   script.onerror=()=>{pdfLibraryPromise=null;reject(new Error('Could not load PDF generator from CDN'));};
    document.head.appendChild(script);
   });
   return pdfLibraryPromise;
@@ -257,7 +256,7 @@ th:first-child,td:first-child{width:44px;text-align:center;font-size:11px;color:
    toast('PDF created. Choose Share or Download.');
   }catch(error){
    console.error('PDF generation failed:',error);
-   toast('PDF failed. Check your internet connection and retry.');
+   toast(error&&error.message&&error.message.includes('CDN')?'PDF library blocked. Open in Chrome with internet and retry.':'PDF creation failed. Please retry or check the connection.');
   }finally{printButton.disabled=false;topButton.disabled=false;printButton.innerHTML=oldButton;}
  }
  $('downloadPdf').addEventListener('click',()=>{if(lastPdfBlob){downloadBlob(lastPdfBlob,lastPdfName);closeSheet();toast('PDF downloaded');}});
