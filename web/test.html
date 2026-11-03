@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f4f6fa">
+<title>Xiaomi Debloat Explorer</title>
+<style>
+:root{color-scheme:light;--bg:#f4f6fa;--panel:#ffffff;--panel2:#f8fafc;--line:#dce3ec;--text:#172235;--muted:#59677a;--accent:#245fbd;--green:#087a50;--yellow:#946000;--red:#b42332}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.wrap{max-width:1180px;margin:auto;padding:28px 18px 60px}.top{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:22px}
+h1{font-size:clamp(25px,5vw,36px);line-height:1.1;margin:0 0 7px;letter-spacing:-.7px;color:#111c2e}.sub{color:var(--muted);margin:0}.source{color:var(--accent);text-decoration:none;font-size:13px}.source:hover{text-decoration:underline}
+.actions{display:flex;gap:8px;flex-wrap:wrap}button,.filelabel{border:1px solid #cbd5e1;background:#fff;color:#243247;border-radius:9px;padding:10px 13px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 1px 2px #1722350a}button:hover,.filelabel:hover{border-color:#7fa5dc;background:#f5f9ff}button:focus-visible,.filelabel:focus-within,input:focus-visible,select:focus-visible{outline:3px solid #9cc1f5;outline-offset:1px}button.primary{background:#245fbd;border-color:#245fbd;color:#fff}button.primary:hover{background:#194fa8;border-color:#194fa8}.filelabel input{display:none}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:0 1px 3px #17223508;border-top:4px solid var(--stat-color,#3478d4)}.stat:nth-child(1){--stat-color:#3478d4}.stat:nth-child(2){--stat-color:#15966b}.stat:nth-child(3){--stat-color:#d69a19}.stat:nth-child(4){--stat-color:#d64c5a}.stat b{display:block;font-size:25px;letter-spacing:-.5px;color:var(--stat-color,#14233a)}.stat span{color:var(--muted);font-size:12px;font-weight:600}
+.filters{background:#fff;border:1px solid var(--line);border-radius:13px;padding:14px;margin-bottom:14px;display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:10px;box-shadow:0 1px 3px #17223508}
+input,select{width:100%;min-width:0;background:#fff;color:#172235;border:1px solid #cbd5e1;border-radius:9px;padding:11px 12px;font:inherit;outline:none}input::placeholder{color:#758195}input:focus,select:focus{border-color:#4c83d0}
+.meta{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;color:#536176;font-size:13px;margin:12px 2px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.item{background:#fff;border:1px solid var(--line);border-left:4px solid var(--card-color,#6b8fc5);border-radius:12px;padding:15px;min-width:0;box-shadow:0 1px 3px #17223508;transition:border-color .15s,box-shadow .15s}.item:hover{border-color:#b8c9df;box-shadow:0 3px 10px #1722350d}.itemhead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.pkg{font:650 13px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;overflow-wrap:anywhere;color:#18345b}.desc{color:#46556a;font-size:13px;margin:9px 0 12px}.tags{display:flex;gap:6px;flex-wrap:wrap}.tag{font-size:11px;font-weight:600;border-radius:6px;padding:3px 8px;background:#eef2f7;color:#40516a;border:1px solid #e1e7ef}.risk{font-weight:750;text-transform:uppercase;letter-spacing:.3px}.os-tag{background:#eaf1ff;color:#2857a5;border-color:#c9d9fa}.cat-tag{background:#f2eaff;color:#7543a8;border-color:#dfccfa}.source-tag{background:#e7f7f4;color:#167568;border-color:#c2e9e2}.risk.safe{color:#086443;background:#e7f6ef;border-color:#c6ead8}.risk.caution{color:#805300;background:#fff5d9;border-color:#f1dfad}.risk.danger{color:#a21e2d;background:#fff0f0;border-color:#f3caca}.copy{padding:5px 8px;font-size:11px;white-space:nowrap;background:#f8fafc;color:#29405f}.empty{padding:45px 15px;text-align:center;color:#58677b;background:#fff;border:1px dashed #cbd5e1;border-radius:12px;grid-column:1/-1}
+.notice{color:#58677b;font-size:12px;margin-top:20px}.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#172b49;color:#fff;border:1px solid #284b7a;padding:10px 15px;border-radius:10px;opacity:0;pointer-events:none;transition:.2s;box-shadow:0 5px 20px #17223530}.toast.show{opacity:1}
+@media(max-width:720px){.stats{grid-template-columns:repeat(2,1fr)}.filters{grid-template-columns:1fr 1fr}.filters .search{grid-column:1/-1}.grid{grid-template-columns:1fr}}
+@media(max-width:390px){.filters{grid-template-columns:1fr}.filters .search{grid-column:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Xiaomi Debloat Explorer</h1>
+      <p class="sub">Browse, filter and copy packages from the community database.</p>
+      <a class="source" href="https://github.com/fadeltd/xiaomi-debloater/blob/main/bloatware.json" target="_blank" rel="noopener">Source: fadeltd/xiaomi-debloater ↗</a>
+    </div>
+    <div class="actions">
+      <button class="primary" id="refresh">↻ Refresh JSON</button>
+      <label class="filelabel">Load JSON file<input type="file" id="file" accept=".json,application/json"></label>
+      <button id="export">Export filtered list</button>
+    </div>
+  </header>
+
+  <section class="stats">
+    <div class="stat"><b id="total">—</b><span>Total packages</span></div>
+    <div class="stat"><b id="safe">—</b><span>Safe</span></div>
+    <div class="stat"><b id="caution">—</b><span>Caution</span></div>
+    <div class="stat"><b id="danger">—</b><span>Danger</span></div>
+  </section>
+
+  <section class="filters">
+    <input class="search" id="search" placeholder="Search package, description or source…" autocomplete="off">
+    <select id="category"><option value="">All categories</option></select>
+    <select id="os"><option value="">All OS versions</option></select>
+    <select id="risk"><option value="">All risk levels</option><option value="safe">Safe</option><option value="caution">Caution</option><option value="danger">Danger</option></select>
+    <select id="sort"><option value="package">Sort: Package name</option><option value="risk">Sort: Risk level</option><option value="category">Sort: Category</option></select>
+  </section>
+
+  <div class="meta"><span id="count">Loading database…</span><span id="version"></span></div>
+  <main class="grid" id="list"><div class="empty">Fetching bloatware.json…</div></main>
+  <p class="notice">Risk labels and descriptions are community guidance, not a guarantee for every device or ROM. Verify package dependencies before uninstalling system apps. This page only displays data; it does not modify your phone.</p>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const JSON_URL='https://raw.githubusercontent.com/fadeltd/xiaomi-debloater/main/bloatware.json';
+let database={version:'',updated:'',packages:[]}, filtered=[];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(msg){$('toast').textContent=msg;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),1900)}
+function categoryOptions(){
+ const old=$('category').value, cats=[...new Set(database.packages.map(x=>x.category||'uncategorized'))].sort();
+ $('category').innerHTML='<option value="">All categories</option>'+cats.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
+ if(cats.includes(old))$('category').value=old;
+ const oldOS=$('os').value, systems=[...new Set(database.packages.flatMap(x=>Array.isArray(x.os)?x.os:[]))].sort();
+ $('os').innerHTML='<option value="">All OS versions</option>'+systems.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');
+ if(systems.includes(oldOS))$('os').value=oldOS;
+}
+function stats(){
+ const p=database.packages;
+ $('total').textContent=p.length;
+ $('safe').textContent=p.filter(x=>x.risk==='safe').length;
+ $('caution').textContent=p.filter(x=>x.risk==='caution').length;
+ $('danger').textContent=p.filter(x=>x.risk==='danger').length;
+ $('version').textContent=[database.version?'Version '+database.version:'',database.updated?'Updated '+database.updated:''].filter(Boolean).join(' · ');
+}
+function render(){
+ const q=$('search').value.trim().toLowerCase(),cat=$('category').value,os=$('os').value,risk=$('risk').value,sort=$('sort').value;
+ filtered=database.packages.filter(x=>{
+  const hay=[x.package,x.description,x.category,...(x.sources||[])].join(' ').toLowerCase();
+  return (!q||hay.includes(q))&&(!cat||(x.category||'uncategorized')===cat)&&(!os||(Array.isArray(x.os)&&x.os.includes(os)))&&(!risk||x.risk===risk);
+ });
+ const rank={safe:0,caution:1,danger:2};
+ filtered.sort((a,b)=>sort==='risk'?(rank[a.risk]??9)-(rank[b.risk]??9)||a.package.localeCompare(b.package):sort==='category'?(a.category||'').localeCompare(b.category||'')||a.package.localeCompare(b.package):a.package.localeCompare(b.package));
+ $('count').textContent=`Showing ${filtered.length} of ${database.packages.length} packages`;
+ $('list').innerHTML=filtered.length?filtered.map(x=>`
+  <article class="item" style="--card-color:${x.risk==='safe'?'#15966b':x.risk==='caution'?'#d69a19':x.risk==='danger'?'#d64c5a':'#6b8fc5'}">
+   <div class="itemhead"><div class="pkg">${esc(x.package)}</div><button class="copy" data-copy="${esc(x.package)}">Copy ID</button></div>
+   <p class="desc">${esc(x.description||'No description provided.')}</p>
+   <div class="tags"><span class="tag risk ${esc(x.risk||'')}">${esc(x.risk||'Unrated')}</span><span class="tag cat-tag">${esc(x.category||'uncategorized')}</span>${(Array.isArray(x.os)?x.os:[]).map(v=>`<span class="tag os-tag">${esc(v)}</span>`).join('')}${(x.sources||[]).map(s=>`<span class="tag source-tag">${esc(s)}</span>`).join('')}</div>
+  </article>`).join(''):'<div class="empty">No packages match these filters.</div>';
+}
+async function loadRemote(){
+ $('list').innerHTML='<div class="empty">Fetching latest JSON…</div>';
+ try{
+  const res=await fetch(JSON_URL,{cache:'no-store'});if(!res.ok)throw new Error('HTTP '+res.status);
+  const data=await res.json();if(!Array.isArray(data.packages))throw new Error('Invalid JSON format');
+  database=data;categoryOptions();stats();render();toast('Database refreshed');
+ }catch(e){$('list').innerHTML=`<div class="empty">Could not load the online JSON: ${esc(e.message)}<br><br>Try opening this page with internet access, or use “Load JSON file”.</div>`;$('count').textContent='Database unavailable'}
+}
+$('refresh').addEventListener('click',loadRemote);
+['search','category','os','risk','sort'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',render));
+$('file').addEventListener('change',async e=>{
+ const f=e.target.files[0];if(!f)return;
+ try{const data=JSON.parse(await f.text());if(!Array.isArray(data.packages))throw new Error('Expected a packages array');database=data;categoryOptions();stats();render();toast('Local JSON loaded')}
+ catch(err){toast('Invalid JSON: '+err.message)}e.target.value='';
+});
+$('list').addEventListener('click',async e=>{
+ const b=e.target.closest('[data-copy]');if(!b)return;
+ try{await navigator.clipboard.writeText(b.dataset.copy);toast('Package ID copied')}
+ catch{toast('Clipboard unavailable in this browser')}
+});
+$('export').addEventListener('click',()=>{
+ const text=filtered.map(x=>x.package).join('\n');if(!text){toast('No packages to export');return}
+ const blob=new Blob([text+'\n'],{type:'text/plain'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download='xiaomi-debloat-filtered.txt';a.click();URL.revokeObjectURL(url);toast('Filtered list exported');
+});
+loadRemote();
+</script>
+</body>
+</html>
